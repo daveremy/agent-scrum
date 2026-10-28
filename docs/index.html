@@ -128,7 +128,9 @@ svg .barw{fill:var(--warn)}
 
 <p>Software teams have faced this coordination problem before, with people. Scrum is the most widely used answer. This paper describes how a single developer's agent fleet arrived at a version of Scrum by trial and error, which parts carried over unchanged, which needed new meanings, and which did not apply. We call the result <strong>Agent Scrum</strong> and propose it as a methodology others can test.</p>
 
-<p>We did not set out to apply Scrum. The first sprints were an attempt to put a boundary around work that otherwise ran without end. Each later change (points, velocity, a fixed deadline, retrospectives, a separate team) answered a specific failure. That history matters to the argument: the Scrum devices reappeared because the same problems reappeared, not because we copied a process.</p>
+<p>The author spent years on, and running, human Scrum teams, and came away finding much of it overbearing: a great deal of ceremony, much of which seemed unnecessary for agents. Scrum was therefore not the plan. The first sprints were an attempt to put a boundary around work that otherwise ran without end, and each later change (points, velocity, a fixed deadline, retrospectives, a separate team) was adopted reluctantly, one at a time, to answer a specific failure. That history matters to the argument: the Scrum devices reappeared because the same problems reappeared, not because we copied a process.</p>
+
+<p>The results were better than that reluctance predicted. Measured against goals most practitioners of applied AI engineering share, the method delivers several of them at once. A software factory that runs around the clock falls out of the sprint loop. Compound engineering falls out of the retrospective. Scrum also brings a large body of existing knowledge (estimation, the time box, the definition of done, the retrospective) that agents and their human can draw on instead of inventing, and its built-in risk management and early feedback carry over intact: small committed batches, a hard boundary, and finished work every two hours. Scrum and agents appear to fit well, and some of the human problems that weigh on human Scrum teams do not arise.</p>
 
 <p>The contributions are (1) a description of the method and the mapping from Scrum's roles, artifacts and ceremonies to agent equivalents; (2) a mechanism for enforcing a hard sprint deadline on agents that cannot be interrupted mid-task; (3) measurements from a reference implementation; and (4) an account of open problems.</p>
 
@@ -459,7 +461,7 @@ svg .barw{fill:var(--warn)}
 
 <h2><span class="n">8</span>Observations</h2>
 
-<p>All figures are from the reference implementation as of 28 October 2026. They describe one system with one human owner and should be read as a case study, not as a controlled evaluation.</p>
+<p>All figures are from the reference implementation as of 28 October 2026. They come from one reference implementation and should be read as a case study, not as a controlled evaluation.</p>
 
 <div class="tw"><table>
 <thead><tr><th>Measure</th><th class="num">Value</th><th>Basis</th></tr></thead>
@@ -528,7 +530,7 @@ svg .barw{fill:var(--warn)}
 <li><strong>Human waits in planning.</strong> Sprints no longer wait on the human, but planning still can (5.12). The two sprint backlogs kept committed ahead cover about four hours; a longer wait for an answer still stops the team.</li>
 <li><strong>No standing backlog refinement.</strong> The product owner refines when it plans. A recurring refinement ceremony that keeps two or three sprints of ready stories would protect teams from running dry.</li>
 <li><strong>Points are not comparable.</strong> As in human Scrum, points mean nothing across projects. Token velocity partly addresses this, but it varies with the model mix and the kind of work.</li>
-<li><strong>One team, one owner.</strong> Every result here comes from a single team serving a single person. Horizontal scaling is designed but untested.</li>
+<li><strong>Several teams at once.</strong> Horizontal scaling is designed but untested.</li>
 <li><strong>Sprint length is a choice, not a finding.</strong> Two hours has worked, and is probably near the shortest length that works. We have not compared it with longer sprints; we plan to measure ceremony time, spillover, merge tail and token velocity across sprint lengths and move to longer sprints if the numbers favour them.</li>
 </ul>
 
@@ -552,7 +554,7 @@ svg .barw{fill:var(--warn)}
 
 <h2><span class="n">12</span>Conclusion</h2>
 
-<p>Agent Scrum keeps the parts of Scrum that address coordination (a fixed time box, a committed backlog, relative estimation, a definition of done, a board and a retrospective) and changes the parts that assumed human workers. In this reference implementation the method has run unattended for 324 sprints, finishes about four committed stories in five, and spends almost none of the sprint on ceremony. Its weaknesses are also clear: retrospective fixes do not ship fast enough, merges lag approvals, and multi-team operation is untested. We offer it as a starting point for others organizing teams of agents, and we expect the time scale, the capacity model and the role of the human to be where other implementations differ most.</p>
+<p>Agent Scrum keeps the parts of Scrum that address coordination (a fixed time box, a committed backlog, relative estimation, a definition of done, a board and a retrospective) and changes the parts that assumed human workers. In this reference implementation the method has run unattended for 324 sprints, finishes about four committed stories in five, and spends almost none of the sprint on ceremony. Its weaknesses are also clear: retrospective fixes do not ship fast enough, merges lag approvals, and multi-team operation is untested. Scrum turned out to suit agents better than it suited many of the human teams it was designed for. We offer Agent Scrum as a starting point for others organizing teams of agents, and we expect the time scale, the capacity model and the role of the human to be where other implementations differ most.</p>
 
 <h2><span class="n">A</span>Appendix: a sprint summary</h2>
 

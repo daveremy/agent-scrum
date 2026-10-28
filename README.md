@@ -36,8 +36,7 @@ reference implementation is a personal project; its code is not part of this rep
 ## Feedback
 
 Open an issue for questions, counter-examples, or results from your own attempt. Measurements
-from other implementations are the most useful contribution: the paper's numbers come from one
-team serving one person.
+from other implementations are the most useful contribution.
 
 ## License
 
