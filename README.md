@@ -1,5 +1,3 @@
-*Created in collaboration with AI.*
-
 # Agent Scrum
 
 A sprint methodology for continuous software development by teams of AI coding agents, with
@@ -49,3 +47,5 @@ Reuse, adapt and share it, with attribution.
 Remy, D. *Agent Scrum: A sprint methodology for continuous software development by AI agent
 teams, with observations from 324 sprints.* Working paper, version 0.1, October 2026.
 https://github.com/daveremy/agent-scrum
+
+*Created in collaboration with AI.*
