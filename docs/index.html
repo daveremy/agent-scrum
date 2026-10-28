@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Agent Scrum: a sprint methodology for continuous software development by AI agent teams, with observations from 324 sprints. Working paper.">
+<title>Agent Scrum</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single-column working paper. Numbered sections because the paper is read in order; tables and figures as plates. */
+:root{
+  --bg:#f3f5f4;        /* paper, faint green-grey bias toward the accent */
+  --plate:#ffffff;
+  --ink:#18201d;
+  --ink-2:#4c5753;
+  --rule:#d3dad7;
+  --accent:#1d5f8a;    /* board blue: the radiator's column headers */
+  --done:#2f7a4f;      /* merged */
+  --warn:#9a6a12;      /* carried over, approved-not-merged */
+  --soft:#e4eae8;
+  --display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121816;--plate:#1a2220;--ink:#e4ebe8;--ink-2:#a2afaa;--rule:#2d3a36;
+    --accent:#6fb0dc;--done:#6cc28f;--warn:#d9ac55;--soft:#22302c;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121816;--plate:#1a2220;--ink:#e4ebe8;--ink-2:#a2afaa;--rule:#2d3a36;
+  --accent:#6fb0dc;--done:#6cc28f;--warn:#d9ac55;--soft:#22302c;color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 72px;}
+article{max-width:690px;margin:0 auto;min-width:0}
+.disclose{font-family:var(--body);font-style:italic;font-size:.82rem;color:var(--ink-2);margin:0 0 1.4rem}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;font-weight:600;margin:0}
+h1{font-size:2.6rem;letter-spacing:-.01em;margin-bottom:.4rem}
+.subtitle{font-size:1.2rem;color:var(--ink-2);margin:0 0 1.2rem;font-style:italic}
+.byline{font-family:var(--ui);font-size:.78rem;color:var(--ink-2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.8rem}
+h2{font-size:1.5rem;margin-top:2.8rem;margin-bottom:.8rem}
+h2 .n{font-family:var(--ui);font-size:.95rem;color:var(--accent);font-weight:600;margin-right:.5rem;letter-spacing:.02em}
+h3{font-size:1.15rem;margin-top:1.8rem;margin-bottom:.5rem}
+p{margin:0 0 1rem}
+.abstract{background:var(--plate);border:1px solid var(--rule);border-radius:6px;padding:16px 20px;margin:0 0 1.6rem}
+.abstract .lbl,.kw .lbl{font-family:var(--ui);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:.4rem}
+.abstract p{font-size:.98rem;margin:0}
+.kw{font-size:.9rem;color:var(--ink-2);margin:0 0 2rem}
+.kw .lbl{display:inline;margin-right:.4rem}
+code{font-family:var(--mono);font-size:.82em;background:var(--soft);padding:.05em .3em;border-radius:3px}
+ul,ol{padding-left:1.3rem;margin:0 0 1rem}
+li{margin-bottom:.4rem}
+strong{font-weight:600}
+dfn{font-style:normal;font-weight:600}
+.tw{overflow-x:auto;margin:1.2rem 0 .4rem;background:var(--plate);border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-family:var(--ui);font-size:.86rem;line-height:1.45}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;color:var(--ink-2);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tcap,figcaption{font-family:var(--ui);font-size:.84rem;color:var(--ink-2);margin:.5rem 0 1.6rem;line-height:1.5}
+figure{margin:1.6rem 0 0}
+.plate{background:var(--plate);border:1px solid var(--rule);border-radius:6px;padding:12px;overflow-x:auto}
+.plate svg{display:block;width:100%;height:auto;max-width:100%;min-width:560px}
+svg text{font-family:var(--ui);fill:var(--ink);font-size:13px}
+svg .dim{fill:var(--ink-2);font-size:11.5px}
+svg .box{fill:var(--plate);stroke:var(--rule);stroke-width:1.5}
+svg .hum{fill:var(--soft);stroke:var(--ink-2);stroke-width:1.5}
+svg .acc{fill:var(--plate);stroke:var(--accent);stroke-width:2}
+svg .dn{fill:var(--plate);stroke:var(--done);stroke-width:2}
+svg .dash{fill:none;stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:5 4}
+svg .ln{stroke:var(--ink-2);stroke-width:1.5;fill:none}
+svg .ta{fill:var(--accent);font-weight:600}
+svg .td{fill:var(--done);font-weight:600}
+svg .arrow{fill:var(--ink-2)}
+.ph{font-family:var(--ui);font-size:.88rem;color:var(--ink-2);background:var(--soft);border:1px dashed var(--ink-2);border-radius:6px;padding:28px 18px;text-align:center}
+.note{font-family:var(--ui);font-size:.86rem;color:var(--ink-2);border-left:3px solid var(--warn);padding:2px 0 2px 12px;margin:0 0 1rem}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.refs{font-size:.9rem}
+.refs li{margin-bottom:.5rem}
+.term{background:#101418;border-color:#2a3138;padding:14px}
+.termpre{margin:0;font-family:var(--mono);font-size:11px;line-height:1.35;color:#d6dde3;white-space:pre;background:none;border:0}
+.appx{background:var(--plate);border:1px solid var(--rule);border-radius:6px;padding:16px 20px;font-size:.95rem;margin:0 0 1rem}
+.appx .ah{font-family:var(--display);font-weight:600;font-size:1.2rem;margin:0 0 .2rem}
+.appx .am{font-family:var(--ui);font-size:.8rem;color:var(--ink-2);margin:0 0 1rem}
+svg .fillsoftbar{fill:var(--soft)}
+svg .barb{fill:var(--accent)}
+svg .barw{fill:var(--warn)}
+@media print{
+  :root{--bg:#fff;--plate:#fff;--ink:#111;--ink-2:#444;--rule:#ccc;--soft:#f0f2f1;color-scheme:light}
+  body{font-size:10.5pt;padding:0;background:#fff}
+  article{max-width:none}
+  .pdflink{display:none}
+  h2{break-after:avoid} h3{break-after:avoid}
+  figure,.tw,.abstract,.appx,table{break-inside:avoid}
+  .termpre{font-size:5.6px;line-height:1.3}
+  .plate svg{min-width:0}
+  a{color:inherit;text-decoration:none}
+}
+.pdflink{font-family:var(--ui);font-size:.85rem;margin:-1rem 0 1.6rem}
+</style>
+
+</head>
+<body>
+<article>
+
+<p class="disclose"><em>Created in collaboration with AI.</em></p>
+
+<h1>Agent Scrum</h1>
+<p class="subtitle">A sprint methodology for continuous software development by AI agent teams, with observations from 324 sprints</p>
+<p class="byline">Dave Remy · Working paper · Version 0.1 · 28 October 2026 · CC BY 4.0</p>
+<p class="pdflink"><a href="agent-scrum.pdf">PDF</a> · <a href="https://github.com/daveremy/agent-scrum">Repository and feedback</a></p>
+
+<div class="abstract">
+<span class="lbl">Abstract</span>
+<p>Over 38 days, a fleet of AI coding agents ran 324 two-hour sprints around the clock on a real product backlog. In the 90 sprints run by a dedicated scrum-team agent, 79% of committed stories reached done inside the sprint and ceremony took under five minutes per sprint. The slowest stage was not writing code: the median time from approval to merge equalled the median time to build. Compounding was the weakest part: 119 of 159 retrospective actions are still open. We call the method that produced these numbers <strong>Agent Scrum</strong>. It keeps Scrum's core devices (a time-boxed sprint, a committed sprint backlog, story points, velocity, a Definition of Done and a retrospective) and changes their scale and constraints. Sprints last two hours instead of two weeks, capacity comes from model rate limits instead of headcount, and cost is measured as <em>token velocity</em>, the tokens consumed per merged story point. Conversation and planning stay with one human-facing product-owner agent, while execution moves to scrum-team agents created on demand. The human stakeholder spends under two hours a day, and no sprint waits for them. Horizontal scaling to several teams is designed but untested because of token budget.</p>
+</div>
+<p class="kw"><span class="lbl">Keywords</span>Scrum, agile methods, AI coding agents, multi-agent systems, compound engineering, software factory</p>
+
+<h2><span class="n">1</span>Introduction</h2>
+
+<p>AI coding agents can now take an issue, write the change, test it and open a pull request with little human help. Once a developer has more than one such agent, the question changes from how to prompt an agent to how to organize a group of them. Work has to be chosen, sized, assigned, reviewed, merged and learned from, and the human who owns the result has limited attention.</p>
+
+<p>Software teams have faced this coordination problem before, with people. Scrum is the most widely used answer. This paper describes how a single developer's agent fleet arrived at a version of Scrum by trial and error, which parts carried over unchanged, which needed new meanings, and which did not apply. We call the result <strong>Agent Scrum</strong> and propose it as a methodology others can test.</p>
+
+<p>We did not set out to apply Scrum. The first sprints were an attempt to put a boundary around work that otherwise ran without end. Each later change (points, velocity, a fixed deadline, retrospectives, a separate team) answered a specific failure. That history matters to the argument: the Scrum devices reappeared because the same problems reappeared, not because we copied a process.</p>
+
+<p>The contributions are (1) a description of the method and the mapping from Scrum's roles, artifacts and ceremonies to agent equivalents; (2) a mechanism for enforcing a hard sprint deadline on agents that cannot be interrupted mid-task; (3) measurements from a reference implementation; and (4) an account of open problems.</p>
+
+<h2><span class="n">2</span>Background: Scrum in brief</h2>
+
+<p>This section is for readers who have not worked in Scrum. Readers who have may skip to Section 3. Section 6 lists the terms this paper uses, and Section 11 places Agent Scrum among related work.</p>
+
+<p>Scrum organizes software work into short, fixed periods called <dfn>sprints</dfn>, traditionally one to four weeks. Before a sprint starts, the team holds <dfn>sprint planning</dfn>: it takes the highest-priority items from the <dfn>product backlog</dfn> (the ordered list of everything the product might need) and commits to a subset, the <dfn>sprint backlog</dfn>. The items are usually written as <dfn>user stories</dfn>, and a team may split a story into smaller <dfn>tasks</dfn>.</p>
+
+<p>Each story is estimated in <dfn>story points</dfn>, a relative measure of effort and risk. A 3-point story is roughly three times the work of a 1-point story. Points have no unit and mean nothing outside the team that assigns them. Their value comes from consistency: over several sprints, the number of points a team completes per sprint, its <dfn>velocity</dfn>, becomes a usable forecast of what it can commit to next time. The ratio of what a team committed to what it finished is often called its <dfn>say/do ratio</dfn>.</p>
+
+<p>The sprint is <dfn>time-boxed</dfn>: its end date does not move. Work that is not finished does not extend the sprint; it returns to the backlog. The fixed end forces regular decisions about scope and makes velocity comparable from sprint to sprint. A story counts as finished only when it meets the team's <dfn>Definition of Done</dfn>, a shared quality bar such as "reviewed, tested and merged".</p>
+
+<p>Scrum has three roles. The <dfn>product owner</dfn> orders the backlog and decides what is worth building. The <dfn>developers</dfn> do the work. The <dfn>scrum master</dfn> runs the process and removes obstacles. It also has a small set of ceremonies: planning, a short daily stand-up for coordination, a <dfn>sprint review</dfn> that demonstrates the finished work to stakeholders, and a <dfn>retrospective</dfn> in which the team examines how it worked and chooses improvements. Teams often display the sprint on a <dfn>board</dfn> with columns such as To do, In progress and Done, a practice borrowed from Kanban.</p>
+
+<p>Two newer terms are relevant. <dfn>Compound engineering</dfn> describes a practice in which every unit of work leaves the system better at doing the next unit, for example by turning each mistake into a rule, test or tool that prevents it from recurring. A <dfn>software factory</dfn> describes a production line for software in which much of the building is automated and humans supervise the line. Agent Scrum treats the retrospective as the place where compounding happens and the sprint loop as the factory line.</p>
+
+<h2><span class="n">3</span>Setting: the reference implementation</h2>
+
+<p>The reference implementation runs on one Linux workstation. A terminal multiplexer (tmux) holds a fleet of persistent AI agents, each a long-running Claude Code session with a defined role: chief of staff, health, finance, communications, research, marketing, customer support, operations, and a chief technology officer (CTO) agent that owns engineering. Each agent has its own message channel to the human owner and can message the others. Scheduled work runs on system timers, not inside the agents.</p>
+
+<p>Engineering work spans several repositories: the fleet's own infrastructure, a consumer mobile and web product, a Rust desktop application, and a machine-monitoring tool. Work is tracked as GitHub and GitLab issues. The developer of record is one person, who acts as stakeholder and final decision-maker but writes little of the code.</p>
+
+<figure>
+<div class="plate">
+<svg viewBox="0 0 680 330" role="img" aria-labelledby="f1t">
+<title id="f1t">Roles in the reference implementation: the human stakeholder, the CTO agent, the scrum-team agent and its developer and reviewer agents.</title>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="hum" x="20" y="20" width="190" height="62" rx="6"/>
+<text x="115" y="46" text-anchor="middle" font-weight="600">Human stakeholder</text>
+<text x="115" y="66" text-anchor="middle" class="dim">priorities, taste, decisions</text>
+<rect class="acc" x="20" y="130" width="190" height="78" rx="6"/>
+<text x="115" y="156" text-anchor="middle" class="ta">CTO agent</text>
+<text x="115" y="176" text-anchor="middle" class="dim">conversation, backlog,</text>
+<text x="115" y="192" text-anchor="middle" class="dim">planning, exceptions</text>
+<path class="ln" d="M115,82 L115,128" marker-end="url(#ah)" marker-start="url(#ah)"/>
+<rect class="box" x="20" y="250" width="190" height="56" rx="6"/>
+<text x="115" y="274" text-anchor="middle">Other role agents</text>
+<text x="115" y="292" text-anchor="middle" class="dim">health, finance, ops, research…</text>
+<rect class="dn" x="290" y="110" width="200" height="118" rx="6"/>
+<text x="390" y="136" text-anchor="middle" class="td">Scrum team agent</text>
+<text x="390" y="156" text-anchor="middle" class="dim">created on demand</text>
+<text x="390" y="176" text-anchor="middle" class="dim">runs one sprint at a time,</text>
+<text x="390" y="192" text-anchor="middle" class="dim">merges, wraps, retro,</text>
+<text x="390" y="208" text-anchor="middle" class="dim">sprint review</text>
+<path class="ln" d="M210,169 L288,169" marker-end="url(#ah)"/>
+<text x="249" y="160" text-anchor="middle" class="dim">committed</text>
+<text x="249" y="186" text-anchor="middle" class="dim">backlog</text>
+<rect class="dash" x="290" y="250" width="200" height="56" rx="6"/>
+<text x="390" y="274" text-anchor="middle" class="dim">Further teams</text>
+<text x="390" y="292" text-anchor="middle" class="dim">(designed; budget-limited)</text>
+<rect class="box" x="550" y="70" width="112" height="56" rx="6"/>
+<text x="606" y="94" text-anchor="middle">Developer</text>
+<text x="606" y="112" text-anchor="middle" class="dim">one per story</text>
+<rect class="box" x="550" y="140" width="112" height="56" rx="6"/>
+<text x="606" y="164" text-anchor="middle">Developer</text>
+<text x="606" y="182" text-anchor="middle" class="dim">own worktree</text>
+<rect class="box" x="550" y="210" width="112" height="56" rx="6"/>
+<text x="606" y="234" text-anchor="middle">Reviewers</text>
+<text x="606" y="252" text-anchor="middle" class="dim">one or two, by risk</text>
+<path class="ln" d="M490,140 L548,98" marker-end="url(#ah)"/>
+<path class="ln" d="M490,169 L548,168" marker-end="url(#ah)"/>
+<path class="ln" d="M490,198 L548,238" marker-end="url(#ah)"/>
+</svg>
+</div>
+<figcaption>Figure 1. Roles in the reference implementation. The CTO agent talks with the human and plans; the scrum team executes. Dashed: further teams, which the design supports but the token budget does not yet fund.</figcaption>
+</figure>
+
+<h2><span class="n">4</span>How the method evolved</h2>
+
+<h3>4.1 Sprints inside the CTO agent (sprints 1 to 234)</h3>
+
+<p>The first sprint ran on 20 September 2026. The CTO agent chose a few issues, estimated them in points, started developer agents for each, reviewed and merged their pull requests, and at the end wrote a sprint report with a name, a plan, estimates against actuals, costs, lessons and a retrospective. The report was published as a web page for the human owner to read. In practice it served as the sprint review.</p>
+
+<p>Sprint length settled quickly at two hours, on fixed time boxes that start on odd hours (01:00 to 03:00, 03:00 to 05:00, and so on). As in human Scrum, the length is a choice, not a law (see Sections 7 and 9). By the end of September the loop ran unattended: at the end of each sprint the CTO agent wrote a handoff note, cleared its own context and resumed into the next sprint.</p>
+
+<p>This worked, and it exposed a structural problem. The CTO agent was doing two jobs with one context window. Running a sprint fills the context with build logs, review verdicts and merge state. Talking with the owner about direction, priorities and design needs the same context for a different purpose. Each job degraded the other: sprint state crowded out the conversation, and a conversation in the middle of a sprint delayed merges and wraps.</p>
+
+<h3>4.2 Separating conversation from execution</h3>
+
+<p>The first design gave the sprint its own permanent agent, provisionally named after Jeff Sutherland, one of Scrum's creators. While designing it, we noticed that nothing limited the design to one such agent. If a scrum master is an agent, a second team is a second instance of the same definition with different repositories assigned to it.</p>
+
+<p>The design that shipped on 19 October therefore defines a <em>scrum team</em> as a class of agent, started on demand by the launcher as a numbered instance. The CTO agent keeps the conversation with the owner, the product backlog, sprint planning and exceptions. The scrum team runs exactly what it is handed. A pilot began on 19 October with sprint 235, and since 20 October the dedicated team has run every sprint while the CTO agent runs none. 90 sprints have run that way at the time of writing.</p>
+
+<h2><span class="n">5</span>The method</h2>
+
+<h3>5.1 Roles, artifacts and ceremonies</h3>
+
+<p>Table 1 maps Scrum's elements to their Agent Scrum equivalents. Most map one to one. The changes are in who plays the roles and in the time scale.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Scrum</th><th>Agent Scrum</th></tr></thead>
+<tbody>
+<tr><td>Stakeholder (sponsor)</td><td>The human owner. Sets direction, makes decisions that need judgement or taste, watches the board.</td></tr>
+<tr><td>Product owner</td><td>The CTO agent. Decides what gets built and why: orders the product backlog, refines it with the stakeholder, plans and commits each sprint backlog, answers the team's impediments, and merges the changes the team may not merge itself (5.5). It is also the architect and the stakeholder's day-to-day engineering conversation partner. It runs no sprints.</td></tr>
+<tr><td>Scrum master</td><td>The scrum-team agent. Decides how the committed sprint gets executed: starts developers and reviewers, tracks every story's stage, merges what the merge principles allow it (5.5), enforces the deadline, writes the report and runs the retrospective.</td></tr>
+<tr><td>Developers</td><td>Short-lived developer agents, usually two tasks per story (implement, then a fresh run to finish), each in an isolated git worktree. One or two reviewer agents per story, by risk (5.4).</td></tr>
+<tr><td>Sprint backlog</td><td>A <em>committed sprint backlog</em>: a file listing each committed story with its points, scope, definition of done, reviewers and a stop rule. It is checked by a linter and committed by the product owner before the sprint starts; the team may not add, resize or reorder stories.</td></tr>
+<tr><td>Stretch goals</td><td>An Overflow list of ready stories the team may pull in once the commitment is done.</td></tr>
+<tr><td>Sprint length</td><td>Two hours, on fixed time boxes starting at odd hours, around the clock.</td></tr>
+<tr><td>Velocity</td><td>Rolling mean of merged points per sprint, used by the linter to reject an over-committed sprint backlog. Paired with token velocity (5.8).</td></tr>
+<tr><td>Daily stand-up</td><td>None. Replaced by a live board (5.9).</td></tr>
+<tr><td>Sprint review</td><td>A named sprint report published as a web page at the end of each sprint (5.10).</td></tr>
+<tr><td>Retrospective</td><td>Part of every wrap. Each finding ends in a filed issue, a mitigation already applied, or a stated reason not to act (5.11).</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 1. Scrum elements and their Agent Scrum equivalents.</p>
+
+<h3>5.2 Planning: from product backlog to sprint backlog</h3>
+
+<p>Planning works at four horizons, from months to hours.</p>
+<ul>
+<li><strong>Issues, epics and milestones (months).</strong> All engineering work is a GitHub or GitLab issue. Larger outcomes are epics, whose body holds a status table of their child issues, and milestones group issues toward a release or goal. Every issue is filed with a priority, a milestone and its epic. A sweep runs before every handoff and after every merge to find work that exists only in a conversation or a note and file it.</li>
+<li><strong>The product backlog order (weeks).</strong> One short ranked list across all repositories names what comes next. Labels on the issues mirror the ranking, and the planning script reports any drift between the two.</li>
+<li><strong>The weekly plan (a week).</strong> Once a week the product owner sets two or three goals with finish lines, re-ranks the backlog against them and lays out a ranked queue of stories for the week, sized against rolling velocity. It is reviewed in a 15 to 20 minute backlog refinement session with the human stakeholder, who reorders or cuts; routine stories the stakeholder pre-approves there need no second approval, while changes touching money, authentication or production deploys keep a per-merge approval. The plan also holds a reserve of small one-point stories for sprints that run dry.</li>
+<li><strong>Sprint planning (hours).</strong> Each sprint backlog is drawn from the weekly queue and committed at least an hour before its sprint starts, and the product owner keeps the next two sprint backlogs committed at all times. Planning revises the weekly plan rather than inventing: new work enters only by displacing a named story or within an interrupt budget of about 20% of the sprint's points, and the report records goal points against interrupt points.</li>
+</ul>
+
+<figure>
+<div class="plate">
+<svg viewBox="0 0 680 250" role="img" aria-labelledby="f5t">
+<title id="f5t">Four nested planning horizons, from issues and epics over months to the committed sprint backlog over hours.</title>
+<rect class="box" x="10" y="10" width="660" height="230" rx="8"/>
+<text x="26" y="34" font-weight="600">Issues, epics, milestones</text>
+<text x="654" y="34" text-anchor="end" class="dim">months · every piece of work is an issue</text>
+<rect class="box" x="40" y="50" width="600" height="180" rx="7"/>
+<text x="56" y="74" font-weight="600">Product backlog order</text>
+<text x="624" y="74" text-anchor="end" class="dim">weeks · one ranked list across repositories</text>
+<rect class="hum" x="70" y="90" width="540" height="130" rx="6"/>
+<text x="86" y="114" font-weight="600">Weekly plan</text>
+<text x="594" y="114" text-anchor="end" class="dim">a week · goals, ranked queue, refined with the stakeholder</text>
+<rect class="acc" x="100" y="130" width="230" height="78" rx="5"/>
+<text x="116" y="154" class="ta">Sprint backlog n+1</text>
+<text x="116" y="174" class="dim">committed ≥ 1 hour ahead</text>
+<text x="116" y="192" class="dim">stories meet the Definition of Ready</text>
+<rect class="acc" x="350" y="130" width="230" height="78" rx="5"/>
+<text x="366" y="154" class="ta">Sprint backlog n+2</text>
+<text x="366" y="174" class="dim">two always committed</text>
+<text x="366" y="192" class="dim">Overflow ≥ 1.5 × commitment</text>
+</svg>
+</div>
+<figcaption>Figure 2. Planning horizons. The product owner works from the outside in; the stakeholder joins at the weekly plan. The scrum team only ever sees a committed sprint backlog.</figcaption>
+</figure>
+
+<p>A story may enter a sprint backlog only when it meets the <dfn>Definition of Ready</dfn>: the product owner has made four reads of the story, each within 12 hours of its sprint (the issue's log, its open pull requests, its last three comments, and a search of the main branch for an existing fix), sized it, and written a brief and a stop rule. Stories of 5 or 8 points are split or planned first; every sprint also runs one planning-only story that prepares a later one. Each sprint backlog carries ready Overflow worth at least one and a half times its committed points, plus two or three one-point planning stories, so that a sprint whose commitment finishes early still has useful work. These rules came from measured idle time: on 20 October the team finished its commitment about 40 minutes early in most sprints because nothing ready was left, and on 25 October one sprint sat idle for 45 minutes with no Overflow. The Overflow ratio was raised from one to one and a half on 28 October, after the team ran dry three times in one night.</p>
+
+<h3>5.3 The sprint loop</h3>
+
+<p>A sprint proceeds as follows. When the sprint starts, the scrum team checks that its sprint backlog is committed and assigned to this team and this sprint, takes a lease on the repositories in scope (so no other team can merge there), names the sprint, records the commitment and starts the first wave of developers. Each developer works in an isolated worktree, opens a pull request and hands it to its reviewers. A blocking review sends the story back for a fix round. Approved changes go through continuous integration and the team's merge script, which re-checks approvals and scope before merging. Ten minutes before the boundary the team stops starting new work and wraps: it saves the state of anything unfinished, merges what is approved, writes the report and the retrospective, writes a handoff note and clears its own context for the next sprint. A story that is approved but not merged at the wrap is not done: it counts as spillover, and its points do not count toward the sprint's done. It is not lost either. Every approval is written to an append-only log, and the team cannot release its lease on a repository while an approved change there is still open. At the next sprint's start the scrum master reconciles that log and sends each approved change back through the merge script, which checks again that the approval is for the current final commit and asks for another review if anything changed. Changes in a class the product owner merges wait in the product owner's merge queue instead.</p>
+
+<h3>5.4 Definition of Done</h3>
+
+<p>Each story in the committed sprint backlog carries its own done condition: <code>merged</code>, <code>merged+deployed</code> for the consumer product, where deployment is part of the job, or <code>closed</code> with a reason for stories that conclude without code. Underneath that sits a team-wide quality bar that applies to every merge: approval on the final commit by the reviewers the change's risk requires (one for documentation, tests, CI configuration and tested tooling; two for core code, interfaces between components, money, authentication and every consumer-product change), passing continuous integration, and a merge by whoever the merge principles name (5.5). A story that needs a human decision the human has not yet given is not done. It spills over, and the missing decision is recorded as an impediment for the product owner.</p>
+
+<h3>5.5 Who merges what</h3>
+
+<p>Merging is where a change takes effect, so the method assigns merge authority by principle rather than by repository. Each change is classified from the files it touches, by a script, and each class has exactly one merger.</p>
+<ol>
+<li><strong>The team merges what its Definition of Done can fully judge.</strong> An ordinary, reversible change inside the team's leased scope, approved by the reviewers its risk requires and passing CI, is the team's to merge. This covers most work, and keeping it with the team is what lets the loop run unattended.</li>
+<li><strong>No agent merges a change to the rules that govern it.</strong> Changes to the agents' own instructions and skills, to the merge rules, to the class lists and to the gates are merged by the product owner. This is separation of duties: a team optimizing its own throughput must not be able to loosen its own constraints, even by accident.</li>
+<li><strong>Irreversible or high-consequence changes need the stakeholder's explicit yes.</strong> Money, authentication, production data and schema, public releases, and any weakening of a gate on an irreversible action. The yes is collected at planning and bound to the specific change, so the sprint never waits for it. Where the change is to the gates or merge rules themselves, the product owner merges after the yes.</li>
+<li><strong>When in doubt, ask.</strong> If the team cannot tell which class a change belongs to, it raises an impediment instead of guessing (5.7).</li>
+</ol>
+<p>The rationale is the same as in human organizations: authority follows the ability to judge consequences. The team can judge whether code is correct. It cannot be the judge of the rules it works under, and only the stakeholder can accept an irreversible risk.</p>
+
+<h3>5.6 A hard, deterministic deadline</h3>
+
+<p>The time box is the device that makes Scrum work: it forces scope decisions and makes velocity comparable. It is also the hardest device to enforce on agents. An agent cannot be interrupted in the middle of a turn; a message sent to it is read only when its current step ends. An agent's own timers live inside its session and can disappear with no error. In sprint 43 (25 September) the scrum loop's in-session wrap timer never fired, and the agent sat idle for about 100 minutes past its boundary.</p>
+
+<p>The current design separates the deadline from the agent in three layers:</p>
+<ol>
+<li><strong>The boundary is data, not a clock reading.</strong> The committed sprint backlog carries the sprint's start and end as timestamps. The team's lease on its repositories expires 60 minutes after the boundary, so a team that overruns cannot hold its scope indefinitely.</li>
+<li><strong>An external trigger starts the wrap.</strong> A system timer, independent of the agent's session, fires ten minutes before every boundary. It waits up to ten minutes for the agent to finish its current step, then delivers the wrap instruction. It never interrupts a running step. Of its last 60 firings, 58 delivered and 2 reported an error.</li>
+<li><strong>A watchdog catches a missed wrap.</strong> Twenty minutes after the boundary, a second timer checks whether the sprint wrapped. If not, it nudges the agent and then escalates to the operations agent.</li>
+</ol>
+<figure>
+<div class="plate">
+<svg viewBox="0 0 680 230" role="img" aria-labelledby="f3t">
+<title id="f3t">Timeline of one two-hour sprint and the three mechanisms that enforce its end.</title>
+<defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<line class="ln" x1="40" y1="120" x2="650" y2="120"/>
+<rect class="dn" x="40" y="96" width="460" height="48" rx="4"/>
+<text x="270" y="117" text-anchor="middle" class="td">Sprint: work in waves</text>
+<text x="270" y="134" text-anchor="middle" class="dim">developers build, reviewers review, team merges</text>
+<rect class="acc" x="500" y="96" width="60" height="48" rx="4"/>
+<text x="530" y="117" text-anchor="middle" class="ta">Wrap</text>
+<text x="530" y="134" text-anchor="middle" class="dim">≤10 min</text>
+<rect class="dash" x="560" y="96" width="90" height="48" rx="4"/>
+<text x="605" y="117" text-anchor="middle" class="dim">next sprint</text>
+<text x="40" y="164" text-anchor="middle" class="dim">07:00</text>
+<text x="500" y="164" text-anchor="middle" class="dim">08:50</text>
+<text x="560" y="164" text-anchor="middle" class="dim">09:00</text>
+<text x="633" y="164" text-anchor="middle" class="dim">09:20</text>
+<line class="ln" x1="560" y1="90" x2="560" y2="150"/>
+<path class="ln" d="M500,40 L500,92" marker-end="url(#ah3)"/>
+<text x="500" y="22" text-anchor="middle">1 External trigger</text>
+<text x="500" y="36" text-anchor="middle" class="dim">waits for an idle step, then wraps</text>
+<path class="ln" d="M633,196 L633,150" marker-end="url(#ah3)"/>
+<text x="672" y="212" text-anchor="end">2 Watchdog</text>
+<text x="672" y="226" text-anchor="end" class="dim">nudges, escalates</text>
+<path class="ln" d="M150,196 L150,148" marker-end="url(#ah3)"/>
+<text x="150" y="212" text-anchor="middle">3 Boundary is data</text>
+<text x="150" y="226" text-anchor="middle" class="dim">start and end stamped in the backlog</text>
+</svg>
+</div>
+<figcaption>Figure 3. One sprint and the mechanisms that end it. The wrap is requested ten minutes before the boundary by a timer outside the agent, starts when the agent's current step finishes, and is checked again twenty minutes after the boundary.</figcaption>
+</figure>
+<p>The deadline is therefore deterministic in when the wrap is requested and bounded in when it starts: up to ten minutes, the length of the longest step an agent may be in. Unfinished stories spill over to the next sprint and are counted by a script at its start.</p>
+
+<h3>5.7 Exceptions and impediments</h3>
+
+<p>The scrum team never asks the human. It asks the product owner, through an append-only rulings log. A request names its class (scope, merge class, out of work, unclear, blocker), the story it blocks, the question, the evidence, and what the team will do meanwhile; a short message wakes the product owner. The answer is a line in the same log that says whether it applies now or from the next sprint. In its first nine days the dedicated team raised 130 requests. The product owner answered in a median of 1 minute (75th percentile 3 minutes). Most were about scope (82), followed by running out of work (14), merge class (10), unclear rules (8) and blockers (8). Four examples, paraphrased:</p>
+<ul>
+<li><strong>Scope.</strong> The two reviewers disagreed on a pull request: one blocked, one approved. Fixing the blocking finding needed a file outside the story's declared scope. Ruling, three minutes later: one fix round inside the existing files, with the approach to take.</li>
+<li><strong>Unclear rules.</strong> The scrum master's instructions said a short re-review counted as approval; the merge script disagreed and refused the merge. Ruling: the script wins and a full review round is owed. The instructions were corrected the same day.</li>
+<li><strong>Merge class.</strong> A change included an edit to an agent's instructions that had to stay a separate commit, but the team's merge path combines commits. Ruling, one minute later: the product owner merges that change himself.</li>
+<li><strong>Out of work.</strong> The sprint's stretch work was done and the reserve was empty. Ruling, one minute later: the next sprint backlog is committed, with its source named.</li>
+</ul>
+
+
+<p>Two exceptions recur most. The first is running out of work. When a sprint's own Overflow runs dry mid-sprint, the team first pulls from the Overflow of the next committed sprint backlog, then from the weekly plan's reserve of one-point stories, and asks the product owner only when both are empty. That request is a single impediment, written to a rulings log the product owner answers; meanwhile the team spends the time on merges, reconciliation and owed reviews. The second is scope. A story's stop rule turns any need outside its declared scope into a question: the team files a scope request with options, and the product owner rules to widen the scope now, to run a fix round, or to spill the story over. Most rulings widen the scope by one file and the story continues. A story added after a sprint backlog is committed is merged by the product owner; the committed backlog itself is never edited. Other impediments in the log include disagreements between reviewers, a change landing in the wrong merge class, and stories that went stale between planning and the sprint. The team never decides scope on its own; scope questions go to the product owner, and questions of taste go to the human.</p>
+
+<h3>5.8 Points, velocity and token velocity</h3>
+
+<p>Points are assigned by the product owner when it refines a story, on the scale 1, 2, 3, 5, 8; the linter rejects any other value. As in human Scrum they are internal: a point in this project means nothing in another. They become useful through consistency, and the sprint-backlog linter uses rolling velocity to reject an over-committed sprint. Recent sprints commit 13 points. A story's points count in the sprint in which it reached merge approval, even if the merge itself lands in a later sprint; the rule matters less than applying it the same way every time. The figures in this paper predate that rule and count merges.</p>
+
+<p>Human Scrum treats people as the fixed resource. Here the scarce resource is model usage, so each sprint report also records <dfn>token velocity</dfn>: tokens consumed per merged story point. Recent sprints measured between 0.27 and 0.68 million tokens per merged point (Claude-side only; work delegated to a second vendor's models is excluded). Token velocity is what turns a project's size in points into a budget.</p>
+
+<h3>5.9 The board: a sprint radiator</h3>
+
+<p>Instead of a daily stand-up, the human watches a live board in a terminal pane: one row of columns per team (Ready, Build, Review, Merging, Done), a card per story with its points and pull request, flags for blocked or silent stories, a burn-up chart against an ideal pace line, and the remaining rate-limit budget. Every stage change a team records becomes an event the board reads. The owner describes it as the change that made the method feel real: work is visible as it flows, and questions can be asked about a specific card while it moves.</p>
+
+<figure>
+<div class="plate term" data-xa-image><pre class="termpre"><span style="font-weight:600">devteam-1-275x</span> · <span style="color:#00d7ff;font-weight:600">the plans for Mantis&#x27;s four whole-job workflows and for th…</span>  <span style="opacity:.6">09:00–11:00</span>  <span style="color:#ff5f5f">█████████████████</span><span style="color:#ff5f5f;opacity:.6">░░░</span> 0h17 left   <span style="font-weight:600">15/32</span> pts <span style="opacity:.6">(committed 13)</span> <span style="color:#5fd787">████████</span><span style="color:#5fd787;opacity:.6">░░░</span>
+<span style="color:#8a8a8a;font-weight:600">READY</span> <span style="opacity:.6">2p</span>           <span style="opacity:.6">│</span><span style="color:#00d7ff;font-weight:600">BUILD</span>              <span style="opacity:.6">│</span><span style="color:#af87ff;font-weight:600">REVIEW</span> <span style="opacity:.6">8p</span>          <span style="opacity:.6">│</span><span style="color:#87d7ff;font-weight:600">MERGING</span> <span style="opacity:.6">9p</span>         <span style="opacity:.6">│</span><span style="color:#5fd787;font-weight:600">DONE</span> <span style="opacity:.6">15p</span>             <span style="color:#6c6c6c"> 32┤</span>           <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>      
+<span style="color:#8a8a8a;background:#303030">▌</span><span style="color:#8a8a8a;background:#303030;font-weight:600">nl616</span><span style="background:#303030"> </span><span style="background:#303030;opacity:.6">1p</span><span style="background:#303030"> </span><span style="background:#303030;opacity:.6">+</span><span style="background:#303030">        </span><span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff;font-weight:600">nl163</span> <span style="opacity:.6">1p</span> <span style="color:#ff5f5f">✗ blocked</span> <span style="color:#ffaf00">⚠ 51m</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#87d7ff;font-weight:600">lo2468</span> <span style="opacity:.6">2p</span> <span style="color:#ffaf00">⚠ 75m</span> <span style="opacity:.6">#2479</span><span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">gs703d</span> <span style="opacity:.6">1p</span>           <span style="color:#6c6c6c">   ┤</span>          <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>     
+<span style="color:#8a8a8a;background:#303030">▌</span><span style="color:#8a8a8a;background:#303030;font-weight:600">Finish nisarg0606…</span><span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff">validateOrRetry t…</span><span style="opacity:.6">│</span> <span style="color:#87d7ff">Dev teams: bring …</span><span style="opacity:.6">│</span> <span style="color:#5fd787">Plan: workflow 4,…</span>  <span style="color:#6c6c6c">   ┤</span>       <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>      
+ <span style="color:#8a8a8a;font-weight:600">nl656</span> <span style="opacity:.6">1p</span> <span style="opacity:.6">+</span>        <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff;font-weight:600">nl260</span> <span style="opacity:.6">3p</span> <span style="color:#ff5f5f">✗ blocked</span> <span style="color:#ffaf00">⚠ 45m</span> <span style="opacity:.6">#637</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#87d7ff;font-weight:600">lo2428</span> <span style="opacity:.6">1p</span> <span style="color:#ffaf00">⚠ 70m</span> <span style="opacity:.6">#2481</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">gs703c</span> <span style="opacity:.6">1p</span>           <span style="color:#6c6c6c"> 25┤</span>     <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>
+ <span style="color:#8a8a8a">undici: four high…</span><span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff">Native audio: Mix…</span><span style="opacity:.6">│</span> <span style="color:#87d7ff">Mantis row briefs…</span><span style="opacity:.6">│</span> <span style="color:#5fd787">Plan: workflow 3,…</span>  <span style="color:#6c6c6c">   ┤</span>     <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff;font-weight:600">nl637</span> <span style="opacity:.6">3p</span> <span style="color:#ff5f5f">✗ blocked</span> <span style="color:#ffaf00">⚠ 32m</span> <span style="opacity:.6">#638</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#87d7ff;font-weight:600">lo2429</span> <span style="opacity:.6">2p</span> <span style="color:#ffaf00">⚠ 67m</span> <span style="opacity:.6">#2482</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">gs703b</span> <span style="opacity:.6">1p</span>           <span style="color:#6c6c6c">   ┤</span>     <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span>
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff">Admin MCP: read-o…</span><span style="opacity:.6">│</span> <span style="color:#87d7ff">run.md lines get …</span><span style="opacity:.6">│</span> <span style="color:#5fd787">Plan: workflow 2,…</span>  <span style="color:#6c6c6c"> 17┤</span>    <span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#5fd787">▁</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff;font-weight:600">nl635</span> <span style="opacity:.6">1p</span> <span style="color:#ff5f5f">✗ blocked</span> <span style="opacity:.6">#636</span><span style="opacity:.6">│</span> <span style="color:#87d7ff;font-weight:600">nl233</span> <span style="opacity:.6">3p</span> <span style="color:#ffaf00">⚠ 52m</span> <span style="opacity:.6">#639</span> <span style="opacity:.6">+</span><span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">gs703a</span> <span style="opacity:.6">1p</span>           <span style="color:#6c6c6c">   ┤</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#5fd787">█</span>   <span style="color:#bcbcbc">·</span><span style="color:#bcbcbc">·</span><span style="color:#bcbcbc">·</span>
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#af87ff">Fresh-clone setup…</span><span style="opacity:.6">│</span> <span style="color:#87d7ff">MCP tool to save …</span><span style="opacity:.6">│</span> <span style="color:#5fd787">Plan: workflow 1,…</span>  <span style="color:#6c6c6c">   ┤</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">▄</span><span style="color:#5fd787">█</span><span style="color:#bcbcbc">·</span><span style="color:#bcbcbc">·</span><span style="color:#bcbcbc">·</span>   
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#87d7ff;font-weight:600">lo2357</span> <span style="opacity:.6">1p</span> <span style="opacity:.6">#2480</span>   <span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">gs691</span> <span style="opacity:.6">2p</span> <span style="opacity:.6">#711</span> <span style="opacity:.6">+</span>     <span style="color:#6c6c6c"> 10┤</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#87d7ff">dev-worker status…</span><span style="opacity:.6">│</span> <span style="color:#5fd787">gs#610 story 10: …</span>  <span style="color:#6c6c6c">   ┤</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#bcbcbc">·</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#5fd787;font-weight:600">lo2469</span> <span style="opacity:.6">1p</span> <span style="opacity:.6">#2478</span>     <span style="color:#6c6c6c">   ┤</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#4e4e4e">░</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▂</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">▅</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span> <span style="color:#5fd787">leg-kit: literal …</span>  <span style="color:#6c6c6c">  2┤</span><span style="color:#bcbcbc">·</span><span style="color:#bcbcbc">·</span><span style="color:#5fd787">▇</span><span style="color:#5fd787">▇</span><span style="color:#5fd787">▇</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span><span style="color:#5fd787">█</span>      
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span><span style="opacity:.6"> +6 more</span>             <span style="color:#6c6c6c">  0└┴──────────┴──────────┴──────────┴──────────┴</span>
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                     <span style="color:#6c6c6c">    09:00    09:30      10:00      10:30    11:00</span>
+                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                   <span style="opacity:.6">│</span>                         <span style="color:#5fd787">█</span> <span style="opacity:.6">done</span>  <span style="color:#4e4e4e">░</span> <span style="opacity:.6">open (up to scope)</span>  <span style="color:#bcbcbc">·</span> <span style="opacity:.6">ideal pace</span>  <span style="color:#ff5f5f">│</span> <span style="opacity:.6">now</span>
+<span style="opacity:.6">Claude 5h 4%  7d 76%  pace 1.455</span>   <span style="opacity:.6">←↑↓→ move · enter detail · esc back · tab team · g goal · q quit</span></pre></div>
+<figcaption>Figure 4. The sprint radiator during sprint devteam-1-275x (09:00 to 11:00), captured from the live terminal at 10:43, with 17 minutes left. Points by column: Ready 6, Review 8, Merging 9, Done 11; the commitment was 13 points and the team had pulled in Overflow. Cards flagged ✗ are blocked, and ⚠ marks a story with no event for the minutes shown. The burn-up chart is on the right, and the 5-hour and 7-day rate-limit readings are at the bottom.</figcaption>
+</figure>
+
+<h3>5.10 Sprint review</h3>
+
+<p>Each sprint is named at planning for what it is meant to achieve (for example "One Build, One Address" or "The File Is Read in the Browser"), and the name is kept in the report. At each wrap the scrum team writes a sprint summary and publishes it as a web page, with its link sent to the stakeholder. The summary serves as the sprint review: the goal and whether it was met, what was merged and why it matters, what was approved but not merged, what spilled over, the impediments raised and how they were ruled, the numbers (commitment against done, points, token velocity) and the retrospective. Appendix A reproduces one.</p>
+
+<h3>5.11 Retrospectives as compound engineering</h3>
+
+<p>The retrospective is written at every wrap. Each line must end in one of three ways: a filed issue, a mitigation that has already been applied, or a stated reason not to act. Examples from sprint 324: pull requests branched before a timeout fix kept the old limit and timed out (mitigated: merge the fix into the branch and relaunch); the board refused the identifiers of refinement stories, so they never appeared (filed as an issue). This is where the method compounds. A lesson that becomes a rule, a gate or a test changes every later sprint. The unit of compounding is a shipped change to how the next sprint runs; a filed issue only records the opportunity. One complete cycle: in sprint 43 the wrap timer inside the agent's session never fired and the sprint overran by about 100 minutes. The retrospective filed it, the fix moved the trigger outside the agent (5.6), and that trigger has since delivered 58 of its last 60 wraps.</p>
+
+<h3>5.12 Human decisions and permission gates</h3>
+
+<p>An unattended loop has one dangerous dependency: a point where it waits for a person. Two kinds of wait exist. A <em>permission gate</em> is the agent runtime itself pausing to ask whether a command may run. A <em>question</em> is an agent asking the human to choose. Either one, raised while the human is away, stops the loop until the human returns, and a stopped agent cannot even run its own timers.</p>
+
+<p>Both have happened. On 22 September a permission prompt in the CTO agent's session halted the sprint cycle for 5 hours 12 minutes. On 26 October the CTO agent opened a question dialog at 15:45 that was answered at 21:53; no sprint backlog was committed in that time, and the scrum team sat idle from 17:00 to 22:00.</p>
+
+<p>The method contains the risk in four ways:</p>
+<ul>
+<li><strong>Decisions are collected at planning, not during the sprint.</strong> A story that needs the human's approval carries it in the committed sprint backlog as a quoted decision, with the channel and date. Without one, the story is not ready.</li>
+<li><strong>The scrum team never asks.</strong> A missing decision becomes an impediment for the product owner and the story spills over. The sprint itself never waits on a person.</li>
+<li><strong>The product owner blocks on a question only under three conditions together.</strong> The human is typing to the product owner right now (recent activity at the terminal is not enough), the answer gates the very next step, and every open question from the team has already been answered, with the next sprint backlog committed. A question that can wait is sent as a message, never as a blocking dialog.</li>
+<li><strong>Permission prompts are pre-empted.</strong> Agents run with permissions granted in advance, and the gates that remain are hooks that refuse with a reason instead of pausing to ask. Each sprint report counts the permission prompts raised; recent sprints report zero to three, all approved.</li>
+</ul>
+<p>The residual risk now sits in planning. The product owner is the one agent that talks to the human, so it is the one agent that can still be held by an unanswered question, and a held product owner commits no sprints.</p>
+
+<h3>5.13 Where to start: a minimum viable Agent Scrum</h3>
+
+<div class="abstract">
+<p>Start with five pieces: a product-owner agent that talks with the human and plans; a separate scrum-master agent that runs one sprint at a time; short-lived developer and reviewer agents; a committed sprint backlog with an explicit done condition for each story; and a wrap trigger that lives outside the agents. Save unfinished work and write a handoff before every context reset, and count a story only when its done condition holds. Add everything else in this section (readiness reads, Overflow ratios, leases, merge classes, the radiator) only as observed failures justify it. That is how each of them arrived here.</p>
+</div>
+
+<p><strong>What it needs from your platform.</strong> The reference implementation runs on persistent agents, but the method does not strictly require them. Its scrum master already clears its context at every wrap and resumes from a handoff note, so each sprint is in effect a fresh session. What the method needs is a scheduler outside the agent that starts each sprint and requests its wrap; state kept in files (the sprint backlog, the question-and-ruling log, the handoff and the sprint summary); and a product owner the human can talk to, which can be an ordinary interactive coding-agent session. The simplest version is a cron or systemd timer that starts a headless scrum-master session every two hours; that session reads the committed backlog, runs it, and writes its summary and handoff before it exits. Persistent agents make the loop smoother, with a live board and questions answered within a minute, but they are not a prerequisite.</p>
+
+<h2><span class="n">6</span>Terminology</h2>
+
+<p>We use Scrum's vocabulary wherever an equivalent exists, because the method is meant to be recognizable to anyone who has worked in Scrum, and because a shared vocabulary makes the comparison in Section 7 possible. The reference implementation grew its own words first and is being renamed toward Scrum's. One Scrum term shifts slightly: a <dfn>task</dfn> is still a piece of a story, but here a task is one agent run, so a story is split where an agent session ends rather than by content. Most stories take two tasks (implement, then a fresh run to finish). Table 2 lists the terms with no clean Scrum equivalent. Table 3 connects the method to terms now in use for AI-assisted development, which are newer and less settled than Scrum's.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Term</th><th>Meaning</th><th>Nearest Scrum idea</th></tr></thead>
+<tbody>
+<tr><td>Seat</td><td>One reviewer agent's turn on a pull request. One or two seats, by risk, are part of the Definition of Done.</td><td>Code review</td></tr>
+<tr><td>Wave</td><td>A batch of tasks started together, sized by the remaining rate-limit budget.</td><td>None; capacity in Scrum is people</td></tr>
+<tr><td>Token velocity</td><td>Tokens consumed per merged story point.</td><td>Velocity, measured in cost instead of time</td></tr>
+<tr><td>Merge tail</td><td>Time from a story's approval to its merge, and the stories still approved but unmerged at the end of a sprint.</td><td>Part of cycle time (from Kanban)</td></tr>
+<tr><td>Scope lease</td><td>A team's exclusive right to merge in a set of repositories for one sprint, expiring 60 minutes after the boundary.</td><td>None; human teams share a codebase by convention</td></tr>
+<tr><td>Overflow</td><td>Ready stories the team may pull in after finishing its commitment.</td><td>Stretch goals</td></tr>
+<tr><td>Handoff and context cycle</td><td>At each wrap the agent writes a handoff note, clears its context and resumes from the note.</td><td>None; a person carries memory between sprints</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 2. Terms with no clean Scrum equivalent.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Emerging term</th><th>Where it appears in Agent Scrum</th></tr></thead>
+<tbody>
+<tr><td>Compound engineering</td><td>The retrospective. Each finding becomes an issue, a rule, a gate or a test, so later sprints start from a better system (5.11).</td></tr>
+<tr><td>Software factory</td><td>The sprint loop as a production line: committed work in, merged and reviewed changes out, around the clock, with the human supervising the line instead of working on it.</td></tr>
+<tr><td>Orchestrator and workers</td><td>A two-level hierarchy. The product owner is the planner: it decides what is built and answers questions. The scrum master is the orchestrator of one sprint: it starts and coordinates short-lived developer and reviewer agents, the workers. Neither does the other's job.</td></tr>
+<tr><td>Context engineering</td><td>The split between the product owner and the team, which keeps conversation and execution in separate context windows, and the handoff and context cycle at each wrap.</td></tr>
+<tr><td>Human on the loop</td><td>The stakeholder supervises and decides but is not a step any sprint waits on (5.12).</td></tr>
+<tr><td>Agent harness</td><td>The deterministic machinery around the agents: the external wrap trigger, leases, the backlog linter and the merge script.</td></tr>
+<tr><td>Background or asynchronous agents</td><td>Developer agents that run unattended in their own worktrees while the human does something else.</td></tr>
+<tr><td>Information radiator</td><td>The sprint radiator. The term is from the agile literature (Cockburn); the board is a live one.</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 3. Emerging terms for AI-assisted development and their place in the method.</p>
+
+<h2><span class="n">7</span>How Agent Scrum differs from Scrum</h2>
+
+<ul>
+<li><strong>Time scale.</strong> Two weeks became two hours. Agents do not tire, and the loop runs at night. Short sprints mean fast feedback, small spillover and a velocity sample every two hours. They also mean the fixed cost of planning is paid twelve times a day. The two-hour length is as arbitrary as Scrum's two weeks, and we expect it to be close to the floor: one story takes about half an hour from first build to merge at the median (Table 5) and much longer at the tail, and a sprint has to fit several waves of stories plus its start and wrap. Longer sprints remain an option, with the same trade-off human teams face: less ceremony per point against later discovery of problems.</li>
+<li><strong>Capacity comes from rate limits, not headcount.</strong> The model provider enforces two usage windows, a rolling 5-hour window and a 7-day window. The 5-hour window caps how many developer agents can work at once; the 7-day window is the team's real capacity for the week. Every committed sprint backlog records a reading of both.</li>
+<li><strong>No stand-up.</strong> Coordination happens through events on the board, not through a meeting.</li>
+<li><strong>One estimator.</strong> There is no planning poker. Points come from the product owner alone, which makes them consistent and removes the cross-check that estimation by a group provides.</li>
+<li><strong>Humans are stakeholders, not developers.</strong> The human makes decisions and approves anything irreversible or customer-facing. A sprint never waits on the human; a story that needs the human spills over.</li>
+<li><strong>Every role can be multiplied.</strong> A human scrum master is one person. An agent scrum master is a definition that can be started several times.</li>
+</ul>
+
+<p><strong>Why keep sprints at all?</strong> An AI engineer's first question is why agents need a time box when an orchestrator could pull ready issues from a queue without end. In our experience the boundary does three jobs that a continuous queue tends to postpone indefinitely. It forces unfinished work to be saved and accounted for, so spillover is counted instead of silently accumulating. It forces the agent to write a durable handoff and clear its context on a schedule, before the context fills and quality drops. And it forces an honest comparison of what was committed with what was done, which is what makes velocity, and therefore planning, possible. A queue could do each of these too. The design choice is to make them happen together, on a schedule the agent does not control. Before the first sprint, work in this project ran much like an open queue; the stakeholder asked for sessions that end in a summary and a retrospective, and that request became the first sprint.</p>
+
+<h2><span class="n">8</span>Observations</h2>
+
+<p>All figures are from the reference implementation as of 28 October 2026. They describe one system with one human owner and should be read as a case study, not as a controlled evaluation.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Measure</th><th class="num">Value</th><th>Basis</th></tr></thead>
+<tbody>
+<tr><td>Sprints run</td><td class="num">324</td><td>20 Sep to 28 Oct 2026; 9 to 12 per day recently</td></tr>
+<tr><td>Sprints run by a dedicated team</td><td class="num">90</td><td>since 19 Oct</td></tr>
+<tr><td>Committed stories done in sprint</td><td class="num">79%</td><td>297 of 375, team sprints</td></tr>
+<tr><td>Committed points merged in sprint</td><td class="num">71%</td><td>310 of 435, 40 sprints reporting both</td></tr>
+<tr><td>Median sprint duration, start to wrap</td><td class="num">114 min</td><td>20 sprints with full event logs</td></tr>
+<tr><td>Median start to first work</td><td class="num">0.6 min</td><td>same 20 sprints</td></tr>
+<tr><td>Median last work to wrap</td><td class="num">3.9 min</td><td>same 20 sprints</td></tr>
+<tr><td>Token velocity</td><td class="num">0.27M to 0.68M</td><td>tokens per merged point, sprint reports 25 to 28 Oct</td></tr>
+<tr><td>Retrospective actions filed / closed</td><td class="num">159 / 40</td><td>issues labelled from a retrospective</td></tr>
+<tr><td>Committed points merged in sprint, CTO-run vs team-run</td><td class="num">72% vs 71%</td><td>114 CTO-run sprints (1 to 131) vs 40 team sprints (280 to 324)</td></tr>
+<tr><td>Mean points merged per sprint, CTO-run vs team-run</td><td class="num">7.4 vs 7.8</td><td>same sprints; committed points only, Overflow excluded</td></tr>
+<tr><td>Commits that are reverts</td><td class="num">about 1.7%</td><td>40 of 2,547 commits across three repositories since 20 Sep</td></tr>
+<tr><td>Human stakeholder time</td><td class="num">under 2 h/day</td><td>the stakeholder's own estimate; usually under 1 hour</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 4. Summary measures.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Stage of a story</th><th class="num">Median</th><th class="num">75th percentile</th></tr></thead>
+<tbody>
+<tr><td>Build (developer writing the change)</td><td class="num">14 min</td><td class="num">20 min</td></tr>
+<tr><td>Review</td><td class="num">2 min</td><td class="num">4 min</td></tr>
+<tr><td>Fix round after a blocking review</td><td class="num">3 min</td><td class="num">11 min</td></tr>
+<tr><td>Approved to merged (CI and merge)</td><td class="num">14 min</td><td class="num">19 min</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 5. Time per stage, from board events for 257 stories. Of these, 130 ended their sprint merged, 55 closed without code, 47 approved but not yet merged, and 15 blocked.</p><figure>
+<div class="plate">
+<svg viewBox="0 0 640 150" role="img" aria-labelledby="f4t">
+<title id="f4t">Median and 75th-percentile minutes per stage: build 14 and 20, review 2 and 4, fix round 3 and 11, approved to merged 14 and 19.</title>
+<text x="0" y="24">Build</text><rect x="200" y="10" width="280" height="20" class="fillsoftbar"/><rect x="200" y="10" width="196" height="20" class="barb"/><text x="488" y="24" class="dim">14 / 20 min</text><text x="0" y="58">Review</text><rect x="200" y="44" width="56" height="20" class="fillsoftbar"/><rect x="200" y="44" width="28" height="20" class="barb"/><text x="264" y="58" class="dim">2 / 4 min</text><text x="0" y="92">Fix round</text><rect x="200" y="78" width="154" height="20" class="fillsoftbar"/><rect x="200" y="78" width="42" height="20" class="barb"/><text x="362" y="92" class="dim">3 / 11 min</text><text x="0" y="126">Approved → merged</text><rect x="200" y="112" width="266" height="20" class="fillsoftbar"/><rect x="200" y="112" width="196" height="20" class="barw"/><text x="474" y="126" class="dim">14 / 19 min</text>
+</svg>
+</div>
+<figcaption>Figure 5. Minutes per stage of a story (dark: median; light: 75th percentile). Approval to merge takes as long as building.</figcaption>
+</figure>
+
+
+<p>Four observations stand out. <strong>First, the slowest stage is not writing code.</strong> A story's median build takes 14 minutes and its median time from approval to merge also takes 14 minutes, and 18% of stories end their sprint approved but not merged. Continuous integration and merging cost as much time as generation, which makes integration, not more developer agents, the first thing to optimize. <strong>Second, ceremony inside the sprint is small:</strong> under five minutes of a two-hour sprint go to starting and wrapping. Planning happens outside the sprint, in the product owner's session, and has not been measured. <strong>Third, the team usually finishes most of its commitment:</strong> about four stories in five are done inside the sprint, and recent sprints often pull Overflow in after the commitment is met.</p>
+
+<p><strong>Fourth, separating the product owner from the team did not change per-sprint throughput.</strong> Committed points merged within the sprint were 72% when the CTO agent ran sprints and 71% under the dedicated team, and points merged per sprint moved from 7.4 to 7.8. The split's value lies elsewhere: the stakeholder's conversation with the product owner no longer competes with sprint state for one context window, and the team became a definition that can be started more than once. That is a claim about the conditions for scaling and about the quality of the human conversation, not about the speed of one team.</p>
+
+<p><strong>Human load.</strong> Sprints continue whether or not the stakeholder is present. The stakeholder's time goes into vision and planning conversations with the product owner, usually under an hour a day and never more than about two, with more early in a project or during a change of direction. The recurring human contributions are pushing the work toward user value, documentation and the right priorities. Backlog refinement must happen regularly, and it is efficient because the product owner brings it as a short series of questions.</p>
+
+<p><strong>Delivered work.</strong> Process measures say little about what the loop produces, so here are three deliveries, chosen to span the range.</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Live sprint board (the radiator)</th><th>MS Project positioning in a desktop app</th><th>Deploy retry in a consumer product</th></tr></thead>
+<tbody>
+<tr><td>Asked</td><td>The stakeholder, 26 Oct, in a pairing session with the product owner</td><td>The stakeholder, 27 Oct at 21:32 and 21:43, in conversation with the product owner</td><td>The product owner, 28 Oct at 03:40, after a build service failed four deploys in two hours</td></tr>
+<tr><td>Delivered</td><td>A terminal board: columns, burn-up chart, story detail, quiet-story warnings, rate-limit readout (Figure 4)</td><td>README, user guide, screencast caption and in-app text say the app opens both P6 and MS Project files; a plan for full MS Project parity with a 50,000-task open-time measurement</td><td>Deploys that fail with the build service's daemon error retry up to twice; any other failure still fails at once</td></tr>
+<tr><td>How</td><td>First version built in pair mode in about 40 minutes; hardened by the scrum team in two later sprints</td><td>A planning story and a handful of small stories over the three overnight sprints that followed the ask, finished by 05:00</td><td>Two sprints: a one-point planning story, then the change with two reviewers and one fix round; about four hours</td></tr>
+<tr><td>Human</td><td>Paired on the first version; one design ask (events as data, not prose)</td><td>The two asks; nothing during the sprints</td><td>None</td></tr>
+<tr><td>Since</td><td>Two open issues and one missing-event bug found while writing this paper</td><td>Not yet measured</td><td>No defects so far</td></tr>
+</tbody></table></div>
+<p class="tcap">Table 6. Three deliveries.</p>
+
+<p><strong>Quality.</strong> We have not yet measured escaped defects or rework directly. Three mechanisms aim at quality: reviewers scaled to risk (5.4), automated checks in continuous integration, and periodic architecture sprints whose stories pay down structure rather than add features, for example splitting an oversized public interface into modules or adding an architecture check that CI then enforces. As a rough proxy, about 1.7% of commits in the three most active repositories are reverts.</p>
+
+<h2><span class="n">9</span>Limitations and open problems</h2>
+
+<ul>
+<li><strong>Retrospective follow-through.</strong> Retrospectives find problems reliably. Fixing them is a different matter: 119 of 159 retrospective issues are open. Compound engineering compounds only when the fixes ship, so retrospective stories need a guaranteed share of each sprint.</li>
+<li><strong>The merge tail.</strong> Approval to merge takes a median 14 minutes, and 18% of stories end a sprint approved but unmerged. This is the most likely reason throughput sometimes feels slower than the board suggests it should.</li>
+<li><strong>Unmeasured planning cost.</strong> Refinement and sprint planning happen in the product owner's session and are not yet timed or costed. A full accounting of ceremony needs that number.</li>
+<li><strong>Human waits in planning.</strong> Sprints no longer wait on the human, but planning still can (5.12). The two sprint backlogs kept committed ahead cover about four hours; a longer wait for an answer still stops the team.</li>
+<li><strong>No standing backlog refinement.</strong> The product owner refines when it plans. A recurring refinement ceremony that keeps two or three sprints of ready stories would protect teams from running dry.</li>
+<li><strong>Points are not comparable.</strong> As in human Scrum, points mean nothing across projects. Token velocity partly addresses this, but it varies with the model mix and the kind of work.</li>
+<li><strong>One team, one owner.</strong> Every result here comes from a single team serving a single person. Horizontal scaling is designed but untested.</li>
+<li><strong>Sprint length is a choice, not a finding.</strong> Two hours has worked, and is probably near the shortest length that works. We have not compared it with longer sprints; we plan to measure ceremony time, spillover, merge tail and token velocity across sprint lengths and move to longer sprints if the numbers favour them.</li>
+</ul>
+
+<h2><span class="n">10</span>Scaling</h2>
+
+<p>The method scales in two directions. <strong>Vertically</strong>, a team can run more developers at once, up to what the 5-hour rate-limit window allows. <strong>Horizontally</strong>, more teams can run at once, each holding a lease on its own repositories. Today a lease covers a whole repository; leases on parts of one repository are designed for but not yet built. The leasing, planning and merge rules already support several teams; what limits the reference implementation to one is the 7-day token budget.</p>
+
+<p>As a snapshot that will date quickly: in October 2026 one dev team at this cadence needed roughly one top-tier Claude Code subscription plus one lower-tier subscription to last through a 7-day usage window. Token velocity makes the next step a budgeting question. If a project's backlog is sized in points, its cost is approximately its points times the token velocity. Adding a project then means adding enough model capacity to run another team, and taking on new work becomes a budget decision rather than a hiring one.</p>
+
+<h2><span class="n">11</span>Related work</h2>
+
+<p>We did not draw on any of the work below; the method grew out of our own failures, one change at a time, and we found this work afterwards. We include it so readers can place Agent Scrum among other approaches. Four lines of work are close to this one. None, as far as we found, combines a time-boxed Scrum loop, a real product backlog worked over weeks, and measurements of the loop itself.</p>
+
+<p><strong>Simulated software teams.</strong> Research systems such as ChatDev and MetaGPT assign agents the roles of a software company and pass work through them in a fixed sequence, closer to waterfall than to Scrum [5, 6]; a 2025 literature review describes the field the same way [9]. AgileCoder adds sprints and agile roles (product manager, scrum master, developer, tester) and reports better benchmark results than the waterfall systems [7]. These systems build one program from one prompt in minutes and are evaluated on benchmarks. Agent Scrum works an open-ended backlog across several repositories for weeks, and its results are operational: commitment against done, time per stage, cost per point.</p>
+
+<p><strong>Practitioner arguments that Scrum is breaking.</strong> A common 2026 view is that story points and two-week sprints were built to ration scarce human time, so agents make them obsolete; proposals replace points with compute or token budgets and sprints with continuous flow or bounded epics [8]. We agree that the human-paced form breaks. Our experience is that the devices themselves survive once rescaled: the time box shrinks to hours, points stay as a relative measure, and token velocity carries the cost. The bottleneck these authors name, review and validation rather than writing, is also what our stage timings show (Table 5).</p>
+
+<p><strong>Software factories and orchestrators.</strong> Systems such as Gas Town and its successor Gas City run tens to a hundred coding agents under a coordinator [10], and the terms <em>software factory</em>, <em>lit factory</em> and <em>dark factory</em> now describe how much human review such a line keeps [11]. That work is mostly about infrastructure: routing, parallelism, health. Agent Scrum is a methodology that could run on such infrastructure. It specifies the cadence, the commitment, the definition of done and the governance of who may merge what. In the factory vocabulary it is a lit factory: humans approve what is irreversible and set direction, and machines verify the rest.</p>
+
+<p><strong>Compound engineering.</strong> Every's plan, work, review, compound loop makes each unit of work leave a lesson the system applies next time [12]. Agent Scrum's retrospective is the same idea placed at the sprint boundary, with the rule that every finding ends in an issue, an applied mitigation or a stated reason not to act. Section 9 reports how well that has held.</p>
+
+<h2><span class="n">12</span>Conclusion</h2>
+
+<p>Agent Scrum keeps the parts of Scrum that address coordination (a fixed time box, a committed backlog, relative estimation, a definition of done, a board and a retrospective) and changes the parts that assumed human workers. In this reference implementation the method has run unattended for 324 sprints, finishes about four committed stories in five, and spends almost none of the sprint on ceremony. Its weaknesses are also clear: retrospective fixes do not ship fast enough, merges lag approvals, and multi-team operation is untested. We offer it as a starting point for others organizing teams of agents, and we expect the time scale, the capacity model and the role of the human to be where other implementations differ most.</p>
+
+<h2><span class="n">A</span>Appendix: a sprint summary</h2>
+
+<p>The summary of sprint 324, written by the scrum team at its wrap, shortened for length. Story identifiers are the repositories' issue numbers (gs is the desktop application, lo the fleet's own infrastructure, nl the consumer product). "Packet" is the reference implementation's name for the sprint backlog, and a ruling is the product owner's answer to an impediment.</p>
+
+<div class="appx">
+<p class="ah">Sprint 324 · One Build, One Address</p>
+<p class="am">Team devteam-1 · 05:00 to 07:00 MST, 28 October 2026 · 8 points committed across three repositories</p>
+
+<p><strong>Sprint goal.</strong> The docs say <code>run.sh --local</code> runs from a detached HEAD and drop the last "nothing uploaded" (gs667); the book clip records the hosted app, the build and address of the README video (gs601); the hosted page's tab says Mantis Gantt (gs669); the story-length strings agree (gs649); the gates job may run 90 minutes (lo2423); the radiator drops its legacy fallback (lo2326); the deploy jobs retry the builder-daemon error (nl663). <em>Met except nl663, which is approved and in the product owner's merge queue.</em></p>
+
+<p><strong>Merged (selected).</strong></p>
+<ul>
+<li><strong>gs669</strong> (1 pt): the hosted page's title is "Mantis Gantt", pinned by a test assertion that failed on the old title. One reviewer approved.</li>
+<li><strong>lo2326</strong> (1 pt): the radiator's legacy fallback is gone; a backlog with no events file reads "no sprint packet"; board-window and cursor-edge fixes with tests. Its first CI run timed out at the old 60-minute cap (299 of 322 suites, all passing); the team merged main into the branch, ran one re-review, and it merged at 06:40.</li>
+<li><strong>gs671</strong> (2 pts, Overflow): the moved-note test helpers live in one module with one press-and-drag; test titles identical before and after.</li>
+<li><strong>gs678</strong> (1 pt, added by a ruling): the book's clip command builds the hosted app. Merged by the product owner, who merges every story added after commitment.</li>
+</ul>
+
+<p><strong>Approved, not merged.</strong> nl663 (2 pts): the deploy job retries a failed build whose output reports a builder-daemon error, at most twice, inside its time budget. The first review blocked on two exit paths that did not report the retry count; one fix commit; both reviewers approved on round 2 (68 tests, 0 failures). Waiting in the product owner's merge queue.</p>
+
+<p><strong>Numbers.</strong> Committed 8 points: 6 merged, 2 approved unmerged. Commitment against done: 6 of 7 committed stories merged. Overflow and added stories: 4 points merged, 6 closed as plans or reads. Five impediments raised and answered (one scope, two added stories, one merge class, one out of work). Agents: 16 developer tasks and 2 fix rounds; 23 review reads plus 2 by a second vendor's model. CI: all four runners busy for most of the hour.</p>
+
+<p><strong>Retrospective (selected).</strong></p>
+<ul>
+<li>Pull requests branched before the CI cap was raised kept the 60-minute cap and timed out (three of them) → mitigated: merge main into the branch, one re-review, relaunch; the third is next sprint's first step.</li>
+<li>The merge script refuses stories a ruling adds, and the spillover count reads that ruling as unanswered → filed as an issue.</li>
+<li>The board refused the refinement stories' identifiers, so they never appeared → filed as an issue.</li>
+<li>The scrum master wrote log times from a guessed clock for about 15 minutes → mitigated: a correction line; every later line takes its time from the system clock.</li>
+<li>A review prompt named a command flag that does not exist → mitigated: review prompts name the exact command.</li>
+</ul>
+</div>
+
+<h2><span class="n">R</span>References</h2>
+<ol class="refs">
+<li>Schwaber, K. and Sutherland, J. <em>The Scrum Guide.</em> 2020. <a href="https://scrumguides.org/scrum-guide.html">scrumguides.org</a></li>
+<li>Anderson, D. J. <em>Kanban: Successful Evolutionary Change for Your Technology Business.</em> Blue Hole Press, 2010.</li>
+<li>Cohn, M. <em>Agile Estimating and Planning.</em> Prentice Hall, 2005.</li>
+<li>Cockburn, A. <em>Agile Software Development.</em> Addison-Wesley, 2001. (Information radiators.)</li>
+<li>Qian, C. et al. ChatDev: Communicative Agents for Software Development. ACL 2024. <a href="https://arxiv.org/abs/2307.07924">arXiv:2307.07924</a></li>
+<li>Hong, S. et al. MetaGPT: Meta Programming for a Multi-Agent Collaborative Framework. ICLR 2024. <a href="https://arxiv.org/abs/2308.00352">arXiv:2308.00352</a></li>
+<li>Nguyen, M. H. et al. AgileCoder: Dynamic Collaborative Agents for Software Development based on Agile Methodology. FORGE 2025. <a href="https://arxiv.org/abs/2406.11912">arXiv:2406.11912</a></li>
+<li>Lee. AI Coding Agents Are Breaking the Two-Week Sprint. HackerNoon, 24 June 2026. <a href="https://hackernoon.com/ai-coding-agents-are-breaking-the-two-week-sprint">hackernoon.com</a></li>
+<li>He, J., Treude, C. and Lo, D. LLM-Based Multi-Agent Systems for Software Engineering: Literature Review, Vision and the Road Ahead. <a href="https://arxiv.org/abs/2404.04834">arXiv:2404.04834</a></li>
+<li>Yegge, S. Gas City. <a href="https://blog.gascity.com/posts/orchestration-is-all-you-need/">blog.gascity.com</a></li>
+<li>Osmani, A. Software Factories, Light and Dark. 20 July 2026. <a href="https://addyosmani.com/blog/software-factories/">addyosmani.com</a></li>
+<li>Klaassen, K. Compound engineering. Every, 2026. <a href="https://every.to/">every.to</a></li>
+</ol>
+
+</article>
+
+</body>
+</html>

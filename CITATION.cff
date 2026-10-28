@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you refer to this work, please cite it as below."
+title: "Agent Scrum: A sprint methodology for continuous software development by AI agent teams, with observations from 324 sprints"
+type: report
+authors:
+  - family-names: Remy
+    given-names: Dave
+version: "0.1"
+date-released: 2026-10-28
+license: CC-BY-4.0
+url: "https://github.com/daveremy/agent-scrum"
