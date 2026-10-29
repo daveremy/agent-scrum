@@ -1,0 +1,11 @@
+{
+  "title": "Agent Scrum: A sprint methodology for continuous software development by AI agent teams, with observations from 324 sprints",
+  "upload_type": "publication",
+  "publication_type": "workingpaper",
+  "description": "Agent Scrum keeps Scrum's core devices (a time-boxed sprint, a committed sprint backlog, story points, velocity, a Definition of Done and a retrospective) and rescales them for teams of AI coding agents. Sprints last two hours instead of two weeks; capacity comes from model rate limits instead of headcount; cost is measured as token velocity, the tokens consumed per merged story point. In the reference implementation, 79% of committed stories reached done inside the sprint (297 of 375 over 90 sprints), ceremony took under five minutes per sprint, and the human stakeholder spent under two hours a day. Working paper, version 0.1.",
+  "creators": [{"name": "Remy, Dave", "affiliation": "Independent"}],
+  "license": "CC-BY-4.0",
+  "keywords": ["Scrum", "AI coding agents", "multi-agent systems", "software engineering process", "agile", "Claude Code"],
+  "version": "0.1",
+  "language": "eng"
+}
