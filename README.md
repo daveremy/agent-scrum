@@ -1,5 +1,7 @@
 # Agent Scrum
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23771171.svg)](https://doi.org/10.5281/zenodo.23771171)
+
 A sprint methodology for continuous software development by teams of AI coding agents, with
 observations from 324 sprints.
 
