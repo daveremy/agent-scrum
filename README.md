@@ -6,6 +6,8 @@ A sprint methodology for continuous software development by teams of AI coding a
 observations from 324 sprints.
 
 **Read the paper:** [web](https://daveremy.github.io/agent-scrum/) · [PDF](docs/agent-scrum.pdf) · [source](docs/index.html)
+
+**Short on time?** [The deck, 16 slides](https://spacesheep.dev/@davidlremy/agent-scrum-deck) · [deck PDF](docs/agent-scrum-deck.pdf)
 · version 0.1, 28 October 2026
 
 ## In one paragraph
