@@ -1,6 +1,8 @@
 # Agent Scrum
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23771171.svg)](https://doi.org/10.5281/zenodo.23771171)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23771170.svg)](https://doi.org/10.5281/zenodo.23771170)
+
+Part of **Working Agents**, a living series of working papers on operating AI agents and agent software development: [the plan and index](https://daveremy.github.io/working-agents/) · [all papers on Zenodo](https://zenodo.org/communities/working-agents).
 
 A sprint methodology for continuous software development by teams of AI coding agents, with
 observations from 324 sprints.
