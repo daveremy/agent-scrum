@@ -122,14 +122,24 @@ svg .barw{fill:var(--warn)}
 
 <h1>Agent Scrum</h1>
 <p class="subtitle">A sprint methodology for continuous software development by AI agent teams, with observations from 324 sprints</p>
-<p class="byline">Dave Remy · Working paper · Version 0.1 · 28 October 2026 · CC BY 4.0 · <a href="https://doi.org/10.5281/zenodo.23771171">doi:10.5281/zenodo.23771171</a></p>
+<p class="byline">Dave Remy · Working paper · Version 0.1.1 · 11 November 2026 · CC BY 4.0 · <a href="https://doi.org/10.5281/zenodo.23771171">doi:10.5281/zenodo.23771171</a></p>
 <p class="pdflink"><a href="agent-scrum.pdf">PDF</a> · <a href="https://github.com/daveremy/agent-scrum">Repository and feedback</a></p>
 
 <div class="abstract">
 <span class="lbl">Abstract</span>
-<p>Over 38 days, a fleet of AI coding agents ran 324 two-hour sprints around the clock on a real product backlog. In the 90 sprints run by a dedicated scrum-team agent, 79% of committed stories reached done inside the sprint and ceremony took under five minutes per sprint. The slowest stage was not writing code: the median time from approval to merge equalled the median time to build. Compounding was the weakest part: 119 of 159 retrospective actions are still open. We call the method that produced these numbers <strong>Agent Scrum</strong>. It keeps Scrum's core devices (a time-boxed sprint, a committed sprint backlog, story points, velocity, a Definition of Done and a retrospective) and changes their scale and constraints. Sprints last two hours instead of two weeks, capacity comes from model rate limits instead of headcount, and cost is measured as <em>token velocity</em>, the tokens consumed per merged story point. Conversation and planning stay with one human-facing product-owner agent, while execution moves to scrum-team agents created on demand. The human stakeholder spends under two hours a day, and no sprint waits for them. Horizontal scaling to several teams is designed but untested because of token budget.</p>
+<p>Over 38 days (20 September to 28 October 2026), a fleet of AI coding agents ran 324 two-hour sprints around the clock on a real product backlog. In the 90 sprints run by a dedicated scrum-team agent (19 to 28 October), 79% of committed stories reached done inside the sprint and ceremony took under five minutes per sprint. The slowest stage was not writing code: the median time from approval to merge equalled the median time to build. Compounding was the weakest part: 119 of 159 retrospective actions are still open. We call the method that produced these numbers <strong>Agent Scrum</strong>. It keeps Scrum's core devices (a time-boxed sprint, a committed sprint backlog, story points, velocity, a Definition of Done and a retrospective) and changes their scale and constraints. Sprints last three hours instead of two weeks (two hours for every sprint reported here; three hours since 2 November 2026), capacity comes from model rate limits instead of headcount, and cost is measured as <em>token velocity</em>, the tokens consumed per merged story point. Conversation and planning stay with one human-facing product-owner agent, while execution moves to scrum-team agents created on demand. The human stakeholder spends under two hours a day, and no sprint waits for them. Horizontal scaling to several teams is designed but untested because of token budget.</p>
 </div>
 <p class="kw"><span class="lbl">Keywords</span>Scrum, agile methods, AI coding agents, multi-agent systems, compound engineering, software factory</p>
+
+<h2>Changes in v0.1.1</h2>
+<p>Version 0.1.1 (11 November 2026) corrects facts that changed after version 0.1. It adds no new results; every measurement still covers the two-hour sprints to 28 October 2026.</p>
+<ul>
+<li>Sprints last three hours, eight a day, since 05:00 on 2 November 2026 (abstract, 4.1, Table 1, Figure 3, 7, 9).</li>
+<li>Every sprint backlog carries a backlog refinement story, and a team that runs out of work pulls ready stories from the newest refinement without asking (Table 1, 5.7, 9).</li>
+<li>A story's points count in the sprint in which its pull request merges, not the sprint in which it was approved (5.8).</li>
+<li>Sprint planning is a pluggable step with two planners (5.2).</li>
+<li>The date range and the sprint length are stated next to results measured under two-hour sprints (abstract, 4.2, 5.8, 8).</li>
+</ul>
 
 <h2><span class="n">1</span>Introduction</h2>
 
@@ -214,7 +224,7 @@ svg .barw{fill:var(--warn)}
 
 <p>The first sprint ran on 20 September 2026. The CTO agent chose a few issues, estimated them in points, started developer agents for each, reviewed and merged their pull requests, and at the end wrote a sprint report with a name, a plan, estimates against actuals, costs, lessons and a retrospective. The report was published as a web page for the human owner to read. In practice it served as the sprint review.</p>
 
-<p>Sprint length settled quickly at two hours, on fixed time boxes that start on odd hours (01:00 to 03:00, 03:00 to 05:00, and so on). As in human Scrum, the length is a choice, not a law (see Sections 7 and 9). By the end of September the loop ran unattended: at the end of each sprint the CTO agent wrote a handoff note, cleared its own context and resumed into the next sprint.</p>
+<p>Sprint length settled quickly at two hours, on fixed time boxes that started on odd hours (01:00 to 03:00, 03:00 to 05:00, and so on). Since 05:00 on 2 November 2026, sprints last three hours, on time boxes that start at 02:00, 05:00, 08:00 and every three hours after, eight a day. As in human Scrum, the length is a choice, not a law (see Sections 7 and 9). By the end of September the loop ran unattended: at the end of each sprint the CTO agent wrote a handoff note, cleared its own context and resumed into the next sprint.</p>
 
 <p>This worked, and it exposed a structural problem. The CTO agent was doing two jobs with one context window. Running a sprint fills the context with build logs, review verdicts and merge state. Talking with the owner about direction, priorities and design needs the same context for a different purpose. Each job degraded the other: sprint state crowded out the conversation, and a conversation in the middle of a sprint delayed merges and wraps.</p>
 
@@ -222,7 +232,7 @@ svg .barw{fill:var(--warn)}
 
 <p>The first design gave the sprint its own permanent agent, provisionally named after Jeff Sutherland, one of Scrum's creators. While designing it, we noticed that nothing limited the design to one such agent. If a scrum master is an agent, a second team is a second instance of the same definition with different repositories assigned to it.</p>
 
-<p>The design that shipped on 19 October therefore defines a <em>scrum team</em> as a class of agent, started on demand by the launcher as a numbered instance. The CTO agent keeps the conversation with the owner, the product backlog, sprint planning and exceptions. The scrum team runs exactly what it is handed. A pilot began on 19 October with sprint 235, and since 20 October the dedicated team has run every sprint while the CTO agent runs none. 90 sprints have run that way at the time of writing.</p>
+<p>The design that shipped on 19 October therefore defines a <em>scrum team</em> as a class of agent, started on demand by the launcher as a numbered instance. The CTO agent keeps the conversation with the owner, the product backlog, sprint planning and exceptions. The scrum team runs exactly what it is handed. A pilot began on 19 October with sprint 235, and since 20 October the dedicated team has run every sprint while the CTO agent runs none. 90 sprints, all of two hours, ran that way from 19 to 28 October 2026.</p>
 
 <h2><span class="n">5</span>The method</h2>
 
@@ -237,9 +247,9 @@ svg .barw{fill:var(--warn)}
 <tr><td>Product owner</td><td>The CTO agent. Decides what gets built and why: orders the product backlog, refines it with the stakeholder, plans and commits each sprint backlog, answers the team's impediments, and merges the changes the team may not merge itself (5.5). It is also the architect and the stakeholder's day-to-day engineering conversation partner. It runs no sprints.</td></tr>
 <tr><td>Scrum master</td><td>The scrum-team agent. Decides how the committed sprint gets executed: starts developers and reviewers, tracks every story's stage, merges what the merge principles allow it (5.5), enforces the deadline, writes the report and runs the retrospective.</td></tr>
 <tr><td>Developers</td><td>Short-lived developer agents, usually two tasks per story (implement, then a fresh run to finish), each in an isolated git worktree. One or two reviewer agents per story, by risk (5.4).</td></tr>
-<tr><td>Sprint backlog</td><td>A <em>committed sprint backlog</em>: a file listing each committed story with its points, scope, definition of done, reviewers and a stop rule. It is checked by a linter and committed by the product owner before the sprint starts; the team may not add, resize or reorder stories.</td></tr>
+<tr><td>Sprint backlog</td><td>A <em>committed sprint backlog</em>: a file listing each committed story with its points, scope, definition of done, reviewers and a stop rule. It is checked by a linter and committed by the product owner before the sprint starts; the team may not resize or reorder stories, and adds only the ready stories it pulls from a backlog refinement when it runs out of work (5.7).</td></tr>
 <tr><td>Stretch goals</td><td>An Overflow list of ready stories the team may pull in once the commitment is done.</td></tr>
-<tr><td>Sprint length</td><td>Two hours, on fixed time boxes starting at odd hours, around the clock.</td></tr>
+<tr><td>Sprint length</td><td>Three hours since 2 November 2026 (two hours before), on fixed time boxes starting at 02:00, 05:00, 08:00 and so on, around the clock.</td></tr>
 <tr><td>Velocity</td><td>Rolling mean of merged points per sprint, used by the linter to reject an over-committed sprint backlog. Paired with token velocity (5.8).</td></tr>
 <tr><td>Daily stand-up</td><td>None. Replaced by a live board (5.9).</td></tr>
 <tr><td>Sprint review</td><td>A named sprint report published as a web page at the end of each sprint (5.10).</td></tr>
@@ -254,7 +264,7 @@ svg .barw{fill:var(--warn)}
 <li><strong>Issues, epics and milestones (months).</strong> All engineering work is a GitHub or GitLab issue. Larger outcomes are epics, whose body holds a status table of their child issues, and milestones group issues toward a release or goal. Every issue is filed with a priority, a milestone and its epic. A sweep runs before every handoff and after every merge to find work that exists only in a conversation or a note and file it.</li>
 <li><strong>The product backlog order (weeks).</strong> One short ranked list across all repositories names what comes next. Labels on the issues mirror the ranking, and the planning script reports any drift between the two.</li>
 <li><strong>The weekly plan (a week).</strong> Once a week the product owner sets two or three goals with finish lines, re-ranks the backlog against them and lays out a ranked queue of stories for the week, sized against rolling velocity. It is reviewed in a 15 to 20 minute backlog refinement session with the human stakeholder, who reorders or cuts; routine stories the stakeholder pre-approves there need no second approval, while changes touching money, authentication or production deploys keep a per-merge approval. The plan also holds a reserve of small one-point stories for sprints that run dry.</li>
-<li><strong>Sprint planning (hours).</strong> Each sprint backlog is drawn from the weekly queue and committed at least an hour before its sprint starts, and the product owner keeps the next two sprint backlogs committed at all times. Planning revises the weekly plan rather than inventing: new work enters only by displacing a named story or within an interrupt budget of about 20% of the sprint's points, and the report records goal points against interrupt points.</li>
+<li><strong>Sprint planning (hours).</strong> Each sprint backlog is drawn from the weekly queue and committed at least an hour before its sprint starts, and the product owner keeps the next two sprint backlogs committed at all times. Planning revises the weekly plan rather than inventing: new work enters only by displacing a named story or within an interrupt budget of about 20% of the sprint's points, and the report records goal points against interrupt points. Since 8 November 2026 planning is a pluggable step with two planners: the product owner's model-driven planner, which acts, and a fixed-share planner that gives each repository a set share of velocity. A script scores both against what each sprint merged.</li>
 </ul>
 
 <figure>
@@ -317,7 +327,7 @@ svg .barw{fill:var(--warn)}
 <figure>
 <div class="plate">
 <svg viewBox="0 0 680 230" role="img" aria-labelledby="f3t">
-<title id="f3t">Timeline of one two-hour sprint and the three mechanisms that enforce its end.</title>
+<title id="f3t">Timeline of one three-hour sprint and the three mechanisms that enforce its end.</title>
 <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>
 <line class="ln" x1="40" y1="120" x2="650" y2="120"/>
 <rect class="dn" x="40" y="96" width="460" height="48" rx="4"/>
@@ -328,10 +338,10 @@ svg .barw{fill:var(--warn)}
 <text x="530" y="134" text-anchor="middle" class="dim">≤10 min</text>
 <rect class="dash" x="560" y="96" width="90" height="48" rx="4"/>
 <text x="605" y="117" text-anchor="middle" class="dim">next sprint</text>
-<text x="40" y="164" text-anchor="middle" class="dim">07:00</text>
-<text x="500" y="164" text-anchor="middle" class="dim">08:50</text>
-<text x="560" y="164" text-anchor="middle" class="dim">09:00</text>
-<text x="633" y="164" text-anchor="middle" class="dim">09:20</text>
+<text x="40" y="164" text-anchor="middle" class="dim">08:00</text>
+<text x="500" y="164" text-anchor="middle" class="dim">10:50</text>
+<text x="560" y="164" text-anchor="middle" class="dim">11:00</text>
+<text x="633" y="164" text-anchor="middle" class="dim">11:20</text>
 <line class="ln" x1="560" y1="90" x2="560" y2="150"/>
 <path class="ln" d="M500,40 L500,92" marker-end="url(#ah3)"/>
 <text x="500" y="22" text-anchor="middle">1 External trigger</text>
@@ -359,11 +369,11 @@ svg .barw{fill:var(--warn)}
 </ul>
 
 
-<p>Two exceptions recur most. The first is running out of work. When a sprint's own Overflow runs dry mid-sprint, the team first pulls from the Overflow of the next committed sprint backlog, then from the weekly plan's reserve of one-point stories, and asks the product owner only when both are empty. That request is a single impediment, written to a rulings log the product owner answers; meanwhile the team spends the time on merges, reconciliation and owed reviews. The second is scope. A story's stop rule turns any need outside its declared scope into a question: the team files a scope request with options, and the product owner rules to widen the scope now, to run a fix round, or to spill the story over. Most rulings widen the scope by one file and the story continues. A story added after a sprint backlog is committed is merged by the product owner; the committed backlog itself is never edited. Other impediments in the log include disagreements between reviewers, a change landing in the wrong merge class, and stories that went stale between planning and the sprint. The team never decides scope on its own; scope questions go to the product owner, and questions of taste go to the human.</p>
+<p>Two exceptions recur most. The first is running out of work. When a sprint's own Overflow runs dry mid-sprint, the team first pulls from the Overflow of the next committed sprint backlog, then from the weekly plan's reserve of one-point stories, then, since 2 November 2026, from the ready stories of the newest backlog refinement (9), which it appends to its sprint backlog without asking, and asks the product owner only when all three are empty. That request is a single impediment, written to a rulings log the product owner answers; meanwhile the team spends the time on merges, reconciliation and owed reviews. The second is scope. A story's stop rule turns any need outside its declared scope into a question: the team files a scope request with options, and the product owner rules to widen the scope now, to run a fix round, or to spill the story over. Most rulings widen the scope by one file and the story continues. A story the product owner adds after a sprint backlog is committed is merged by the product owner; the team's only edit to the committed backlog is to append the stories it pulls from a backlog refinement. Other impediments in the log include disagreements between reviewers, a change landing in the wrong merge class, and stories that went stale between planning and the sprint. The team never decides scope on its own; scope questions go to the product owner, and questions of taste go to the human.</p>
 
 <h3>5.8 Points, velocity and token velocity</h3>
 
-<p>Points are assigned by the product owner when it refines a story, on the scale 1, 2, 3, 5, 8; the linter rejects any other value. As in human Scrum they are internal: a point in this project means nothing in another. They become useful through consistency, and the sprint-backlog linter uses rolling velocity to reject an over-committed sprint. Recent sprints commit 13 points. A story's points count in the sprint in which it reached merge approval, even if the merge itself lands in a later sprint; the rule matters less than applying it the same way every time. The figures in this paper predate that rule and count merges.</p>
+<p>Points are assigned by the product owner when it refines a story, on the scale 1, 2, 3, 5, 8; the linter rejects any other value. As in human Scrum they are internal: a point in this project means nothing in another. They become useful through consistency, and the sprint-backlog linter uses rolling velocity to reject an over-committed sprint. Two-hour sprints in late October 2026 committed 13 points. Since 1 November 2026 a story's points count in the sprint in which its pull request merges, and an approved story counts nowhere until it merges; before that they counted in the sprint in which the story reached merge approval. The rule matters less than applying it the same way every time. The figures in this paper count merges.</p>
 
 <p>Human Scrum treats people as the fixed resource. Here the scarce resource is model usage, so each sprint report also records <dfn>token velocity</dfn>: tokens consumed per merged story point. Recent sprints measured between 0.27 and 0.68 million tokens per merged point (Claude-side only; work delegated to a second vendor's models is excluded). Token velocity is what turns a project's size in points into a budget.</p>
 
@@ -441,7 +451,7 @@ svg .barw{fill:var(--warn)}
 <h2><span class="n">7</span>How Agent Scrum differs from Scrum</h2>
 
 <ul>
-<li><strong>Time scale.</strong> Two weeks became two hours. Agents do not tire, and the loop runs at night. Short sprints mean fast feedback, small spillover and a velocity sample every two hours. They also mean the fixed cost of planning is paid twelve times a day. The two-hour length is as arbitrary as Scrum's two weeks, and we expect it to be close to the floor: one story takes about half an hour from first build to merge at the median (Table 5) and much longer at the tail, and a sprint has to fit several waves of stories plus its start and wrap. Longer sprints remain an option, with the same trade-off human teams face: less ceremony per point against later discovery of problems.</li>
+<li><strong>Time scale.</strong> Two weeks became two hours, and since 2 November 2026 three hours. Agents do not tire, and the loop runs at night. Short sprints mean fast feedback, small spillover and a velocity sample every three hours. They also mean the fixed cost of planning is paid eight times a day. The length is as arbitrary as Scrum's two weeks, and we expect two hours to be close to the floor: one story takes about half an hour from first build to merge at the median (Table 5) and much longer at the tail, and a sprint has to fit several waves of stories plus its start and wrap. Sprints longer than three hours remain an option, with the same trade-off human teams face: less ceremony per point against later discovery of problems.</li>
 <li><strong>Capacity comes from rate limits, not headcount.</strong> The model provider enforces two usage windows, a rolling 5-hour window and a 7-day window. The 5-hour window caps how many developer agents can work at once; the 7-day window is the team's real capacity for the week. Every committed sprint backlog records a reading of both.</li>
 <li><strong>No stand-up.</strong> Coordination happens through events on the board, not through a meeting.</li>
 <li><strong>One estimator.</strong> There is no planning poker. Points come from the product owner alone, which makes them consistent and removes the cross-check that estimation by a group provides.</li>
@@ -453,7 +463,7 @@ svg .barw{fill:var(--warn)}
 
 <h2><span class="n">8</span>Observations</h2>
 
-<p>All figures are from the reference implementation as of 28 October 2026. They come from one reference implementation and should be read as a case study, not as a controlled evaluation.</p>
+<p>All figures are from the reference implementation as of 28 October 2026, when sprints lasted two hours; they have lasted three hours since 2 November 2026. They come from one reference implementation and should be read as a case study, not as a controlled evaluation.</p>
 
 <div class="tw"><table>
 <thead><tr><th>Measure</th><th class="num">Value</th><th>Basis</th></tr></thead>
@@ -520,10 +530,10 @@ svg .barw{fill:var(--warn)}
 <li><strong>The merge tail.</strong> Approval to merge takes a median 14 minutes, and 18% of stories end a sprint approved but unmerged. This is the most likely reason throughput sometimes feels slower than the board suggests it should.</li>
 <li><strong>Unmeasured planning cost.</strong> Refinement and sprint planning happen in the product owner's session and are not yet timed or costed. A full accounting of ceremony needs that number.</li>
 <li><strong>Human waits in planning.</strong> Sprints no longer wait on the human, but planning still can (5.12). The two sprint backlogs kept committed ahead cover about four hours; a longer wait for an answer still stops the team.</li>
-<li><strong>No standing backlog refinement.</strong> The product owner refines when it plans. A recurring refinement ceremony that keeps two or three sprints of ready stories would protect teams from running dry.</li>
+<li><strong>Backlog refinement is new.</strong> Since 2 November 2026 every sprint backlog carries a one-point refinement story that posts eight or more ready stories to a standing refinement issue an hour before the next planning, and a team that runs out of work pulls from the newest list (5.7). Its effect on idle time has not been measured.</li>
 <li><strong>Points are not comparable.</strong> As in human Scrum, points mean nothing across projects. Token velocity partly addresses this, but it varies with the model mix and the kind of work.</li>
 <li><strong>Several teams at once.</strong> Horizontal scaling is designed but untested.</li>
-<li><strong>Sprint length is a choice, not a finding.</strong> Two hours has worked, and is probably near the shortest length that works. We have not compared it with longer sprints; we plan to measure ceremony time, spillover, merge tail and token velocity across sprint lengths and move to longer sprints if the numbers favour them.</li>
+<li><strong>Sprint length is a choice, not a finding.</strong> Two hours worked for the sprints reported here, and is probably near the shortest length that works. Sprints moved to three hours on 2 November 2026. We have not yet compared the two lengths; we plan to measure ceremony time, spillover, merge tail and token velocity across them.</li>
 </ul>
 
 <h2><span class="n">10</span>Scaling</h2>

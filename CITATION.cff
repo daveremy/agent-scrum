@@ -5,8 +5,8 @@ type: report
 authors:
   - family-names: Remy
     given-names: Dave
-version: "0.1"
-date-released: 2026-10-28
+version: "0.1.1"
+date-released: 2026-11-11
 license: CC-BY-4.0
 url: "https://github.com/daveremy/agent-scrum"
 doi: "10.5281/zenodo.23771170"

@@ -10,16 +10,16 @@ observations from 324 sprints.
 **Read the paper:** [web](https://daveremy.github.io/agent-scrum/) · [PDF](docs/agent-scrum.pdf) · [source](docs/index.html)
 
 **Short on time?** [The deck, 16 slides](https://spacesheep.dev/@davidlremy/agent-scrum-deck) · [deck PDF](docs/agent-scrum-deck.pdf)
-· version 0.1, 28 October 2026
+· deck version 0.1, 28 October 2026
 
 ## In one paragraph
 
 Agent Scrum keeps Scrum's core devices (a time-boxed sprint, a committed sprint backlog, story
 points, velocity, a Definition of Done and a retrospective) and rescales them for agents. Sprints
-last two hours instead of two weeks. Capacity comes from model rate limits instead of headcount,
+last three hours instead of two weeks (two hours until 2 November 2026). Capacity comes from model rate limits instead of headcount,
 and cost is measured as *token velocity*, the tokens consumed per merged story point. A
 product-owner agent holds the conversation with the human and plans; separate scrum-team agents,
-started on demand, run the sprints. In the reference implementation, 79% of committed stories
+started on demand, run the sprints. In the reference implementation (two-hour sprints, 20 September to 28 October 2026), 79% of committed stories
 reached done inside the sprint, ceremony took under five minutes per sprint, and the human
 stakeholder spent under two hours a day.
 
@@ -30,6 +30,13 @@ agent that runs one sprint at a time; short-lived developer and reviewer agents;
 sprint backlog with an explicit done condition for each story; and a wrap trigger that lives
 outside the agents. Save unfinished work and write a handoff before every context reset, and count
 a story only when its done condition holds. Add the rest only as observed failures justify it.
+
+## Versions
+
+- **0.1.1**, 11 November 2026: facts only. Sprints last three hours since 2 November 2026; every
+  sprint carries a backlog refinement story; points count when the pull request merges; sprint
+  planning is a pluggable step with two planners. No new results.
+- **0.1**, 28 October 2026: first version.
 
 ## What this is, and is not
 
@@ -51,7 +58,7 @@ Reuse, adapt and share it, with attribution.
 ## Citation
 
 Remy, D. *Agent Scrum: A sprint methodology for continuous software development by AI agent
-teams, with observations from 324 sprints.* Working paper, version 0.1, October 2026.
+teams, with observations from 324 sprints.* Working paper, version 0.1.1, November 2026.
 https://github.com/daveremy/agent-scrum
 
 *Created in collaboration with AI.*
