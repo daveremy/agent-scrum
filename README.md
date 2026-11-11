@@ -19,7 +19,7 @@ points, velocity, a Definition of Done and a retrospective) and rescales them fo
 last three hours instead of two weeks (two hours until 2 November 2026). Capacity comes from model rate limits instead of headcount,
 and cost is measured as *token velocity*, the tokens consumed per merged story point. A
 product-owner agent holds the conversation with the human and plans; separate scrum-team agents,
-started on demand, run the sprints. In the reference implementation (two-hour sprints, 20 September to 28 October 2026), 79% of committed stories
+started on demand, run the sprints. In the reference implementation (90 two-hour sprints run by the scrum-team agent, 19 to 28 October 2026), 79% of committed stories
 reached done inside the sprint, ceremony took under five minutes per sprint, and the human
 stakeholder spent under two hours a day.
 
@@ -34,13 +34,14 @@ a story only when its done condition holds. Add the rest only as observed failur
 ## Versions
 
 - **0.1.1**, 11 November 2026: facts only. Sprints last three hours since 2 November 2026; every
-  sprint carries a backlog refinement story; points count when the pull request merges; sprint
-  planning is a pluggable step with two planners. No new results.
+  sprint carries a backlog refinement story; points count when the pull request merges; a sprint
+  backlog is committed about an hour ahead; sprint planning is a pluggable step; American
+  spelling. No new results.
 - **0.1**, 28 October 2026: first version.
 
 ## What this is, and is not
 
-This is a description of one working system, offered so others can try the method, criticise it
+This is a description of one working system, offered so others can try the method, criticize it
 and improve it. It is not a product, a framework to install or a commercial offering. The
 reference implementation is a personal project; its code is not part of this repository.
 
